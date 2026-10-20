@@ -1,0 +1,1268 @@
+<title>Comunicações em Smart Grids</title>
+<style>
+  :root{
+    color-scheme: light;
+    --paper:#f7f7f3; --surface:#ffffff; --surface-2:#eef1ea;
+    --ink:#16211a; --ink-2:#4a554c; --ink-3:#7c867e;
+    --line:#dde3d8; --line-strong:#c3ccbd;
+    --brand-900:#0b3d2a; --brand-800:#0e4d34; --brand-700:#146b45;
+    --brand-500:#2f9463; --brand-200:#cfe6da;
+    --gold:#a97b28; --gold-soft:#f1e3c6;
+    --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100;
+    --s5:#e87ba4; --s6:#008300; --s7:#4a3aa7; --s8:#e34948;
+    --chart-surface:#fcfcfb; --chart-ink:#0b0b0b; --chart-ink2:#52514e;
+    --chart-muted:#898781; --chart-grid:#e1e0d9; --chart-axis:#c3c2b7;
+    --good:#0ca30c; --warn:#c98500; --critical:#d03b3b;
+  }
+  /* Tema único, deliberadamente claro — sem inversão para dark mode (pedido do usuário). */
+  *{box-sizing:border-box;}
+  body{ margin:0; background:var(--paper); color:var(--ink);
+    font-family:"IBM Plex Sans", system-ui, sans-serif; font-size:16px; line-height:1.62; }
+  h1,h2,h3{ font-family:"Source Serif 4", Georgia, serif; font-weight:600; text-wrap:balance; margin:0; color:var(--ink); }
+  .mono{ font-family:"IBM Plex Mono", ui-monospace, monospace; }
+  a{ color:var(--brand-700); }
+  a.cite{ color:var(--ink-2); text-decoration:underline dotted; text-decoration-color:var(--line-strong); text-underline-offset:2px; }
+  a.cite:hover{ color:var(--brand-700); }
+  ::selection{ background:var(--brand-200); }
+  code{ font-family:"IBM Plex Mono", monospace; font-size:.88em; background:var(--surface-2);
+    border:1px solid var(--line); border-radius:3px; padding:1px 5px; }
+  .wrap{ max-width:1040px; margin:0 auto; padding-inline:24px; }
+  @media (max-width:640px){ .wrap{ padding-inline:16px; } }
+  .topbar{ position:sticky; top:env(safe-area-inset-top,0px); z-index:50;
+    background:color-mix(in srgb, var(--paper) 88%, transparent);
+    backdrop-filter:blur(8px); border-bottom:1px solid var(--line); }
+  .topbar-inner{ max-width:1040px; margin:0 auto; padding:10px 24px; display:flex; align-items:center; gap:14px; }
+  .mark{ width:22px; height:22px; border-radius:3px; background:var(--brand-800); flex:none; display:grid; place-items:center; }
+  .mark svg{ width:13px; height:13px; }
+  .topbar-title{ font-size:12.5px; letter-spacing:.02em; color:var(--ink-2); flex:1; min-width:0;
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .topbar-sec{ font-family:"IBM Plex Mono"; font-size:11.5px; color:var(--ink-3); flex:none; }
+  .progress-track{ height:2px; background:var(--line); }
+  .progress-fill{ height:100%; width:0%; background:var(--brand-700); transition:width .08s linear; }
+  .hero{ background:var(--surface); padding-block:56px 0; overflow:hidden; border-bottom:1px solid var(--line); }
+  .hero .wrap{ display:flex; flex-direction:column; gap:22px; padding-bottom:0; }
+  .hero-eyebrow{ display:flex; align-items:center; gap:10px; font-family:"IBM Plex Mono";
+    font-size:12.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--brand-700); }
+  .hero-eyebrow .dot{ width:6px;height:6px;border-radius:50%; background:var(--gold); }
+  .hero h1{ color:var(--ink); font-size:clamp(32px,5.2vw,58px); line-height:1.06; max-width:19ch; }
+  .hero .sub{ color:var(--ink-2); font-size:clamp(16px,2.1vw,20px); max-width:58ch; font-weight:400; }
+  .hero-meta{ display:flex; flex-wrap:wrap; gap:10px 28px; margin-top:2px;
+    padding-top:18px; padding-bottom:28px; border-top:1px solid var(--line); }
+  .hero-meta div{ display:flex; flex-direction:column; gap:3px; }
+  .hero-meta .k{ font-family:"IBM Plex Mono"; font-size:10.5px; letter-spacing:.06em;
+    text-transform:uppercase; color:var(--brand-700); }
+  .hero-meta .v{ font-size:14px; color:var(--ink); font-weight:500; }
+  .hero-illustration{ width:100%; height:auto; display:block; }
+  .img-caption{ font-size:11px; color:var(--ink-3); padding:8px 24px; max-width:1040px; margin:0 auto;
+    display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+  @media (max-width:640px){ .img-caption{ padding:8px 16px; } }
+  section.sec{ padding-block:58px; border-bottom:1px solid var(--line); scroll-margin-top:52px; }
+  section.sec:last-of-type{ border-bottom:none; }
+  .sec-head{ display:flex; gap:18px; align-items:baseline; margin-bottom:16px; }
+  .sec-num{ font-family:"IBM Plex Mono"; font-size:13px; color:var(--brand-700); font-weight:600;
+    letter-spacing:.03em; flex:none; padding-top:6px; }
+  .sec-head h2{ font-size:clamp(23px,3.2vw,31px); }
+  .sec-time{ font-family:"IBM Plex Mono"; font-size:11px; color:var(--ink-3); border:1px solid var(--line);
+    border-radius:3px; padding:2px 7px; flex:none; align-self:center; white-space:nowrap; }
+  .eyebrow{ font-family:"IBM Plex Mono"; font-size:11.5px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--ink-3); margin-bottom:6px; display:block; }
+  h3.sub-h{ font-size:17px; margin:30px 0 8px; }
+  h3.sub-h .tagnum{ font-family:"IBM Plex Mono"; font-size:12px; color:var(--brand-700); margin-right:8px; }
+  .lede{ font-size:16.5px; color:var(--ink-2); max-width:68ch; margin-bottom:6px; }
+  p.body-p{ font-size:15px; color:var(--ink-2); max-width:70ch; margin:0 0 12px; }
+  ul.body-l, ol.body-l{ font-size:15px; color:var(--ink-2); max-width:70ch; padding-left:22px; margin:0 0 14px; }
+  ul.body-l li, ol.body-l li{ margin-bottom:7px; }
+  .callout{ background:var(--surface-2); border-left:3px solid var(--brand-700); padding:14px 18px;
+    font-size:13.8px; color:var(--ink-2); margin-block:18px; max-width:74ch; }
+  .callout b{ color:var(--ink); }
+  .callout.warn{ border-color:var(--warn); }
+  .callout.crit{ border-color:var(--critical); }
+  .quote{ border-left:3px solid var(--gold); padding:12px 18px; font-size:14.5px; font-style:italic;
+    color:var(--ink-2); margin-block:18px; max-width:68ch; background:var(--gold-soft); }
+  .block{ border:1px solid var(--line); background:var(--surface); margin-block:24px; }
+  .block-head{ display:flex; align-items:baseline; gap:12px; padding:12px 18px; border-bottom:1px solid var(--line);
+    background:var(--surface-2); flex-wrap:wrap; }
+  .block-kind{ font-family:"IBM Plex Mono"; font-size:10.5px; letter-spacing:.08em; text-transform:uppercase;
+    font-weight:600; color:var(--brand-700); }
+  .block-title{ font-size:14.5px; font-weight:600; color:var(--ink); flex:1; min-width:180px; }
+  .block-min{ font-family:"IBM Plex Mono"; font-size:11px; color:var(--ink-3); }
+  .block-body{ padding:16px 18px; font-size:14.2px; color:var(--ink-2); }
+  .block-body p{ margin:0 0 10px; max-width:72ch; }
+  .block-body ol, .block-body ul{ padding-left:20px; margin:8px 0 0; max-width:72ch; }
+  .block-body li{ margin-bottom:8px; }
+  .block.reading{ border-left:3px solid var(--s1); }
+  .block.reading .block-kind{ color:var(--s1); }
+  .block.discuss{ border-left:3px solid var(--gold); }
+  .block.discuss .block-kind{ color:var(--gold); }
+  .block.task{ border-left:3px solid var(--brand-700); }
+  .stat-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:1px;
+    background:var(--line); border:1px solid var(--line); margin-block:16px 8px; }
+  .stat-card{ background:var(--surface); padding:20px 18px; display:flex; flex-direction:column; gap:6px; }
+  .stat-value{ font-family:"IBM Plex Mono"; font-weight:600; font-size:clamp(28px,3.7vw,40px);
+    color:var(--brand-800); line-height:1; }
+  .stat-value .unit{ font-size:.5em; color:var(--ink-3); margin-left:3px; }
+  .stat-label{ font-size:12.5px; color:var(--ink-2); line-height:1.35; }
+  .stat-card.hi .stat-value{ color:var(--gold); }
+  .stat-src{ font-size:10px; color:var(--ink-3); margin-top:auto; padding-top:8px; }
+  .mega-wrap{ text-align:center; padding:28px 12px 8px; }
+  .mega-number{ font-family:"IBM Plex Mono"; font-weight:600; font-size:clamp(90px,16vw,190px);
+    line-height:.9; color:var(--gold); text-align:center; margin:8px 0 0; }
+  .mega-label{ font-size:15px; color:var(--ink-2); max-width:52ch; margin:6px auto 0; }
+  .figure{ background:var(--surface); border:1px solid var(--line); padding:22px 22px 16px; margin-block:24px; }
+  .figure-title{ font-size:14.5px; font-weight:600; color:var(--ink); margin-bottom:2px; }
+  .figure-kicker{ font-family:"IBM Plex Mono"; font-size:10.5px; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--brand-700); margin-bottom:4px; display:block; }
+  .figure-note{ font-size:11.5px; color:var(--ink-3); border-top:1px solid var(--line); margin-top:14px;
+    padding-top:10px; display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+  .figure-note b{ color:var(--ink-2); font-weight:500; }
+  .chart-scroll{ overflow-x:auto; }
+  svg text{ font-family:"IBM Plex Sans", sans-serif; }
+  .legend{ display:flex; flex-wrap:wrap; gap:14px 20px; font-size:12px; color:var(--ink-2); margin-top:10px; }
+  .legend-item{ display:flex; align-items:center; gap:6px; }
+  .legend-swatch{ width:10px; height:10px; border-radius:2px; flex:none; }
+  .grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+  .grid-3{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  @media (max-width:760px){ .grid-2,.grid-3{ grid-template-columns:1fr; } }
+  .card{ background:var(--surface-2); border:1px solid var(--line); padding:18px; }
+  .card h3{ font-size:15px; margin-bottom:6px; }
+  .card p{ font-size:13.3px; color:var(--ink-2); margin:0 0 8px; }
+  .card p:last-child{ margin-bottom:0; }
+  .card .tag{ font-family:"IBM Plex Mono"; font-size:10px; letter-spacing:.05em; text-transform:uppercase;
+    color:var(--brand-700); display:block; margin-bottom:8px; }
+  table.data-table{ width:100%; border-collapse:collapse; font-size:13.3px; }
+  .data-table th{ text-align:left; font-family:"IBM Plex Mono"; font-size:10.5px; letter-spacing:.05em;
+    text-transform:uppercase; color:var(--ink-3); font-weight:500; padding:8px 10px; border-bottom:1px solid var(--line-strong); vertical-align:bottom; }
+  .data-table td{ padding:10px; border-bottom:1px solid var(--line); color:var(--ink); vertical-align:top; }
+  .data-table td.num{ font-family:"IBM Plex Mono"; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .data-table td small{ color:var(--ink-3); display:block; font-size:11.5px; line-height:1.4; }
+  .status-pill{ display:inline-flex; align-items:center; gap:6px; font-family:"IBM Plex Mono"; font-size:10.5px;
+    font-weight:600; letter-spacing:.04em; text-transform:uppercase; padding:4px 9px; border-radius:3px; white-space:nowrap; }
+  .status-pill.ok{ background:color-mix(in srgb, var(--good) 16%, transparent); color:var(--good); }
+  .status-pill.wip{ background:color-mix(in srgb, var(--warn) 18%, transparent); color:var(--warn); }
+  .status-pill.risk{ background:color-mix(in srgb, var(--critical) 14%, transparent); color:var(--critical); }
+  .status-pill.neutro{ background:var(--surface-2); color:var(--ink-2); }
+  .refs{ font-size:13px; }
+  .refs h4{ font-family:"IBM Plex Mono"; font-size:11px; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--brand-700); margin:26px 0 10px; }
+  .refs h4:first-child{ margin-top:0; }
+  .refs ol{ padding-left:20px; margin:0; }
+  .refs li{ margin-bottom:9px; color:var(--ink-2); }
+  .refs li b{ color:var(--ink); }
+  footer.page{ padding:40px 0 60px; text-align:center; color:var(--ink-3); font-size:12.5px; }
+  .kexit{ background:var(--surface-2); color:var(--ink); padding-block:56px; border-top:4px solid var(--brand-700); }
+  .kexit h2{ color:var(--ink); font-size:clamp(25px,3.4vw,34px); max-width:24ch; }
+  .kexit .eyebrow{ color:var(--brand-700) !important; }
+  .kexit .stat-value{ color:var(--gold) !important; }
+  .toc{ background:var(--surface); border:1px solid var(--line); padding:18px 20px; margin-block:22px; }
+  .toc ol{ columns:2; column-gap:30px; padding-left:20px; margin:0; font-size:13.5px; }
+  @media (max-width:700px){ .toc ol{ columns:1; } }
+  .toc li{ margin-bottom:5px; color:var(--ink-2); break-inside:avoid; }
+  .tt{ font-family:"IBM Plex Mono"; font-size:12.5px; color:var(--brand-700); }
+</style>
+
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 20 L12 4 L20 20" stroke="#eafff2" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/></svg></div>
+    <div class="topbar-title">Comunicações em Smart Grids no Brasil — Tópicos Especiais em Redes Elétricas Inteligentes</div>
+    <div class="topbar-sec mono"><span id="secnow">00</span>/14</div>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="hero-eyebrow"><span class="dot"></span> IFES · MESTRADO PROFISSIONAL EM ENG. DE CONTROLE E AUTOMAÇÃO</div>
+    <h1>Comunicações em Smart Grids: arquitetura, enlace e protocolos no contexto brasileiro</h1>
+    <p class="sub">A rede elétrica inteligente não é limitada por banda. É limitada por tempo, determinismo e escala — e é aí que a engenharia de comunicação decide o que o sistema de potência consegue fazer.</p>
+    <div class="hero-meta">
+      <div><span class="k">Disciplina</span><span class="v">Tópicos Especiais em Smart Grids e Redes Elétricas Inteligentes</span></div>
+      <div><span class="k">Unidade</span><span class="v">Comunicações — material de estudo e referência</span></div>
+      <div><span class="k">Formato</span><span class="v">Leituras dirigidas + discussões</span></div>
+      <div><span class="k">Data</span><span class="v">20 de outubro de 2026</span></div>
+    </div>
+  </div>
+  <svg class="hero-illustration" viewBox="0 0 1040 290" preserveAspectRatio="xMidYMax slice" role="img" aria-label="Paisagem esquemática: subestação com torre de telecomunicações, linha de transmissão com cabo OPGW, parque eólico, usina solar e bairro com medidores inteligentes em rede mesh">
+    <defs>
+      <linearGradient id="hSky" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#eaf5ee"/><stop offset="55%" stop-color="#f3f8ee"/><stop offset="100%" stop-color="#fbf6e9"/>
+      </linearGradient>
+      <radialGradient id="hSun" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#ffe8ad" stop-opacity=".95"/><stop offset="100%" stop-color="#ffe8ad" stop-opacity="0"/>
+      </radialGradient>
+      <linearGradient id="hHill" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#5c9a72"/><stop offset="100%" stop-color="#3d7d57"/>
+      </linearGradient>
+      <linearGradient id="hHill2" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#79ad86"/><stop offset="100%" stop-color="#5c9a72"/>
+      </linearGradient>
+      <linearGradient id="hPanel" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#2f5f8c"/><stop offset="100%" stop-color="#173a56"/>
+      </linearGradient>
+    </defs>
+    <rect x="0" y="0" width="1040" height="290" fill="url(#hSky)"/>
+    <circle cx="890" cy="72" r="120" fill="url(#hSun)"/><circle cx="890" cy="72" r="30" fill="#ffe9ae"/>
+    <path d="M0 186 C 150 150, 280 174, 420 152 C 540 134, 650 166, 790 148 C 880 136, 960 156, 1040 143 L1040 230 L0 230 Z" fill="url(#hHill2)" opacity=".5"/>
+    <path d="M0 290 L0 198 C 120 172, 250 168, 380 182 C 520 197, 660 206, 800 198 C 900 192, 980 196, 1040 192 L1040 290 Z" fill="url(#hHill)"/>
+    <!-- torre de telecom com ondas -->
+    <g stroke="#2c5240" stroke-width="2.2" fill="none">
+      <path d="M96 196 L112 92 L128 196 M101 164 h22 M105 136 h14 M108 116 h8"/>
+      <line x1="112" y1="92" x2="112" y2="76"/>
+      <path d="M104 80 a 12 12 0 0 1 16 0" stroke="#146b45" stroke-width="1.8"/>
+    </g>
+    <g stroke="#146b45" fill="none" stroke-width="1.6" opacity=".75">
+      <path d="M128 84 a 26 26 0 0 1 0 28"/><path d="M138 76 a 40 40 0 0 1 0 44"/><path d="M148 68 a 54 54 0 0 1 0 60"/>
+      <path d="M96 84 a 26 26 0 0 0 0 28"/><path d="M86 76 a 40 40 0 0 0 0 44"/>
+    </g>
+    <!-- torres de transmissão com OPGW -->
+    <g stroke="#3d5548" stroke-width="1.9" fill="none">
+      <path d="M250 200 L265 128 L280 200 M255 172 h20 M253 186 h24"/><line x1="245" y1="134" x2="285" y2="134"/><line x1="265" y1="128" x2="265" y2="120"/>
+      <path d="M420 206 L435 136 L450 206 M425 178 h20 M423 192 h24"/><line x1="415" y1="142" x2="455" y2="142"/><line x1="435" y1="136" x2="435" y2="128"/>
+      <path d="M590 206 L605 140 L620 206 M595 180 h20 M593 193 h24"/><line x1="585" y1="146" x2="625" y2="146"/><line x1="605" y1="140" x2="605" y2="132"/>
+      <path d="M265 120 Q 350 118 435 128" stroke="#3d5548"/>
+      <path d="M435 128 Q 520 124 605 132" stroke="#3d5548"/>
+      <path d="M245 134 Q 340 138 415 142" /><path d="M455 142 Q 530 142 585 146"/>
+    </g>
+    <path d="M265 120 Q 350 118 435 128 Q 520 124 605 132" stroke="#a97b28" stroke-width="2.2" fill="none" stroke-dasharray="7 5"/>
+    <!-- eólicas -->
+    <g stroke="#2c5240" stroke-width="2.6" fill="none" stroke-linecap="round">
+      <line x1="700" y1="188" x2="700" y2="118"/>
+      <g transform="translate(700,118)"><line x1="0" y1="0" x2="30" y2="-10"/><line x1="0" y1="0" x2="-23" y2="-20"/><line x1="0" y1="0" x2="-6" y2="25"/></g>
+      <line x1="770" y1="186" x2="770" y2="128"/>
+      <g transform="translate(770,128) rotate(22)"><line x1="0" y1="0" x2="26" y2="-9"/><line x1="0" y1="0" x2="-20" y2="-17"/><line x1="0" y1="0" x2="-5" y2="22"/></g>
+    </g>
+    <!-- solar -->
+    <g fill="url(#hPanel)" stroke="#0f2637" stroke-width="1">
+      <g transform="translate(860,196)"><rect width="56" height="26" transform="skewX(-22)"/><line x1="0" y1="13" x2="56" y2="13" stroke="#89b7d9" opacity=".6" transform="skewX(-22)"/></g>
+      <g transform="translate(926,194)"><rect width="56" height="26" transform="skewX(-22)"/><line x1="0" y1="13" x2="56" y2="13" stroke="#89b7d9" opacity=".6" transform="skewX(-22)"/></g>
+    </g>
+    <!-- bairro com nós mesh -->
+    <g fill="#e9efe6" stroke="#2c5240" stroke-width="1.4">
+      <path d="M150 262 h52 v-26 l-26 -16 -26 16 z"/><path d="M225 268 h46 v-24 l-23 -14 -23 14 z"/>
+      <path d="M292 262 h52 v-26 l-26 -16 -26 16 z"/><path d="M368 268 h46 v-24 l-23 -14 -23 14 z"/>
+    </g>
+    <g fill="#146b45"><circle cx="176" cy="226" r="3.6"/><circle cx="248" cy="234" r="3.6"/><circle cx="318" cy="226" r="3.6"/><circle cx="391" cy="234" r="3.6"/></g>
+    <g stroke="#146b45" stroke-width="1.5" stroke-dasharray="4 4" fill="none" opacity=".85">
+      <path d="M176 226 L248 234"/><path d="M248 234 L318 226"/><path d="M318 226 L391 234"/><path d="M176 226 L318 226"/><path d="M391 234 L435 206"/>
+    </g>
+  </svg>
+</header>
+<p class="img-caption"><span>Ilustração esquemática — da subestação (OPGW, torre de telecom) à última milha (rede mesh de medidores)</span><span>Elaboração própria</span></p>
+
+<main class="wrap">
+
+<section class="sec" id="s01" data-title="Enquadramento e roteiro">
+  <div class="sec-head"><span class="sec-num mono">01</span><h2>Enquadramento e Roteiro</h2></div>
+  <p class="lede">Esta aula trata da <b>camada de comunicação</b> das redes elétricas inteligentes: que requisitos o sistema de potência impõe ao enlace, que meios físicos e protocolos atendem a cada requisito, e como esse conjunto está sendo construído — e regulado — no Brasil.</p>
+
+  <div class="callout"><b>Tese da aula.</b> Em smart grids, o parâmetro de projeto escasso não é vazão, é <b>tempo</b>: latência máxima, jitter, determinismo e sincronismo. Um enlace de 100 Mbps com 200 ms de latência é inútil para proteção; um enlace de 50 kbps com 2 ms determinísticos resolve. Quase todo erro de arquitetura em REI vem de dimensionar banda e esquecer o orçamento de tempo.</div>
+
+  <div class="toc">
+    <span class="eyebrow">Roteiro</span>
+    <ol>
+      <li>Enquadramento e roteiro</li>
+      <li>Por que comunicação é o gargalo</li>
+      <li>Arquitetura em camadas: HAN, NAN, FAN, WAN</li>
+      <li>Requisitos por aplicação: o orçamento de tempo</li>
+      <li>Meio físico e tecnologias de enlace</li>
+      <li>Espectro e redes privativas no Brasil</li>
+      <li>Protocolos de medição: NBR 14522, DLMS/COSEM</li>
+      <li>Protocolos de automação: DNP3, IEC 60870-5-104, IEC 61850</li>
+      <li>Modelos de informação e interoperabilidade</li>
+      <li>Sincronismo de tempo e medição fasorial</li>
+      <li>Topologia, redundância e disponibilidade</li>
+      <li>Cibersegurança e privacidade</li>
+      <li>O caso brasileiro: números e regulação</li>
+      <li>Síntese, tarefa e referências</li>
+    </ol>
+  </div>
+
+  <h3 class="sub-h"><span class="tagnum mono">1.1</span>Objetivos de aprendizagem</h3>
+  <p class="body-p">Ao final da aula, o mestrando deve ser capaz de:</p>
+  <ol class="body-l">
+    <li><b>Classificar</b> uma aplicação de rede inteligente (proteção, automação de distribuição, medição, DER, resposta à demanda) segundo seus requisitos de latência, vazão, confiabilidade e sincronismo;</li>
+    <li><b>Selecionar e justificar</b> um meio de enlace (PLC, RF sub-GHz mesh, celular, fibra, satélite) para um cenário dado, explicitando as restrições técnicas, regulatórias e econômicas da escolha;</li>
+    <li><b>Posicionar</b> os principais protocolos do setor (NBR 14522, DLMS/COSEM, DNP3, IEC 60870-5-104, IEC 61850 e seus perfis MMS/GOOSE/SV) no modelo de camadas, identificando onde cada um é adequado e onde é inadequado;</li>
+    <li><b>Dimensionar</b> um orçamento de tempo fim-a-fim e avaliar se uma arquitetura proposta o cumpre;</li>
+    <li><b>Avaliar criticamente</b> o estado da regulação brasileira de medição inteligente, espectro e cibersegurança, e seus efeitos sobre decisões de projeto.</li>
+  </ol>
+
+  <h3 class="sub-h"><span class="tagnum mono">1.2</span>Como usar este material</h3>
+  <p class="body-p">O documento é autossuficiente para estudo assíncrono. Três tipos de bloco organizam o trabalho:</p>
+  <div class="grid-3">
+    <div class="card"><span class="tag">Bloco de leitura</span><h3>Leitura dirigida</h3><p>Trecho específico de um artigo ou norma, com um objetivo de leitura declarado e 2–3 perguntas de verificação.</p></div>
+    <div class="card"><span class="tag">Bloco de discussão</span><h3>Discussão curta</h3><p>Questão aberta, para debate em dupla ou registro escrito individual quando o estudo for assíncrono. Não há resposta única.</p></div>
+    <div class="card"><span class="tag">Bloco de tarefa</span><h3>Tarefa avaliativa</h3><p>Exercício de projeto ao final (Seção 14), com rubrica. Integra as decisões de enlace, protocolo e segurança em um caso único.</p></div>
+  </div>
+  <p class="body-p" style="margin-top:14px">Toda figura e tabela traz fonte e ano no rodapé. Onde um número é estimativa de mercado, projeção ou valor típico de literatura — e não dado oficial —, isso está dito explicitamente na nota da figura. Os dados regulatórios foram verificados em <b>20 de outubro de 2026</b>; a Seção 13 marca os pontos que exigem revalidação antes de reuso.</p>
+</section>
+
+<section class="sec" id="s02" data-title="Por que comunicação é o gargalo">
+  <div class="sec-head"><span class="sec-num mono">02</span><h2>Por Que a Comunicação É o Gargalo</h2></div>
+  <p class="lede">A rede elétrica tradicional foi projetada para operar com <i>pouquíssima</i> informação: medição mensal no consumidor, telemetria apenas em subestações, controle hierárquico e lento. Toda a inteligência que se pede hoje — DER, veículo elétrico, armazenamento, tarifa horária, autorrecomposição — pressupõe observabilidade e atuação em pontos onde não há nem medição nem enlace.</p>
+
+  <h3 class="sub-h"><span class="tagnum mono">2.1</span>A mudança de escala</h3>
+  <p class="body-p">O salto não é de grau, é de ordem de magnitude. Um sistema SCADA clássico de distribuição monitora algumas centenas a alguns milhares de pontos por concessionária. Uma infraestrutura avançada de medição (AMI) com cobertura plena de uma distribuidora de porte médio brasileira precisa endereçar, autenticar, atualizar firmware e coletar dados de <b>milhões</b> de dispositivos, muitos deles em locais sem energia confiável, sem cobertura celular e sujeitos a vandalismo e furto.</p>
+      <p class="body-p">Essa mudança tem três consequências diretas de engenharia, que estruturam o resto do material:</p>
+  <ul class="body-l">
+    <li><b>Heterogeneidade obrigatória.</b> Nenhuma tecnologia única cobre, com custo viável, do centro de Vitória ao interior do Espírito Santo. A arquitetura real é sempre híbrida, e a complexidade migra para a gestão de múltiplas tecnologias sob um único sistema de cabeça (<i>head-end</i>).</li>
+    <li><b>Assimetria entre domínios.</b> Proteção exige milissegundos determinísticos em poucos nós; medição exige tolerância a atraso em milhões de nós. São problemas de rede opostos, e tratá-los com a mesma infraestrutura é o erro de projeto mais comum.</li>
+    <li><b>Ciclo de vida descasado.</b> Um medidor dura 15–20 anos; um módulo de comunicação celular pode ter sua geração de rede descontinuada em 8–10 anos. A escolha do enlace embute risco de obsolescência que não existe no ativo elétrico.</li>
+  </ul>
+
+  <div class="callout warn"><b>Armadilha conceitual recorrente.</b> "Smart grid" não é um problema de telecomunicações com restrições elétricas — é um problema de <b>sistema de controle distribuído</b> cuja planta é a rede elétrica. O requisito de comunicação é derivado da malha de controle: quem define 3 ms não é a norma de rede, é a física do curto-circuito e a coordenação da proteção.</div>
+
+  <div class="block discuss">
+    <div class="block-head"><span class="block-kind">Discussão 1</span><span class="block-title">Onde o atraso realmente dói?</span></div>
+    <div class="block-body">
+      <p>Considere dois cenários na mesma distribuidora:</p>
+      <ol>
+        <li>Um religador automático precisa coordenar com outro religador a 4 km para evitar atuação em cascata.</li>
+        <li>O sistema de faturamento precisa das 96 leituras diárias (15 min) de 800 mil medidores até as 6h da manhã.</li>
+      </ol>
+      <p><b>Pergunta:</b> em qual cenário um aumento de 300 ms na latência média do enlace é irrelevante, e em qual ele inviabiliza a função? Justifique a partir da malha de controle, não da tecnologia. Em seguida, inverta: que métrica de rede é crítica no cenário 2 e irrelevante no cenário 1?</p>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="s03" data-title="Arquitetura em camadas">
+  <div class="sec-head"><span class="sec-num mono">03</span><h2>Arquitetura em Camadas: HAN, NAN, FAN e WAN</h2></div>
+  <p class="lede">A literatura e os modelos de referência (NIST, IEEE 2030, SGAM europeu) descrevem a infraestrutura de comunicação de uma REI em camadas territoriais concêntricas, cada uma com alcance, densidade de nós e requisitos próprios.</p>
+
+  <div class="figure">
+    <span class="figure-kicker">Figura 1 — diagrama de arquitetura</span>
+    <div class="figure-title">Camadas territoriais da infraestrutura de comunicação de uma rede elétrica inteligente</div>
+    <div class="chart-scroll">
+      <svg viewBox="0 0 980 440" width="100%" style="max-width:980px" role="img" aria-label="Diagrama em quatro faixas horizontais: HAN com eletrodomésticos e medidor, NAN com concentrador e mesh, FAN com religadores e reguladores, WAN com subestação e centro de operação">
+        <defs>
+          <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--chart-ink2)"/>
+          </marker>
+        </defs>
+        <!-- faixas -->
+        <g>
+          <rect x="0" y="4" width="980" height="96" fill="#fcfcfb" stroke="var(--chart-grid)"/>
+          <rect x="0" y="104" width="980" height="106" fill="#f6f8f4" stroke="var(--chart-grid)"/>
+          <rect x="0" y="214" width="980" height="100" fill="#fcfcfb" stroke="var(--chart-grid)"/>
+          <rect x="0" y="318" width="980" height="112" fill="#f6f8f4" stroke="var(--chart-grid)"/>
+        </g>
+        <g font-family="IBM Plex Mono" font-size="12" font-weight="600" fill="var(--brand-700)">
+          <text x="14" y="26">HAN / BAN</text><text x="14" y="126">NAN</text><text x="14" y="236">FAN</text><text x="14" y="340">WAN / CORE</text>
+        </g>
+        <g font-size="11" fill="var(--chart-muted)">
+          <text x="14" y="42">10–100 m</text><text x="14" y="142">0,5–5 km</text><text x="14" y="252">5–50 km</text><text x="14" y="356">50–2.000 km</text>
+          <text x="14" y="57">1–50 nós</text><text x="14" y="157">10³–10⁶ nós</text><text x="14" y="267">10²–10⁴ nós</text><text x="14" y="371">10–10³ nós</text>
+        </g>
+        <!-- HAN -->
+        <g transform="translate(150,0)">
+          <g fill="#ffffff" stroke="var(--s1)" stroke-width="1.6">
+            <rect x="0" y="26" width="58" height="46" rx="3"/><rect x="78" y="26" width="58" height="46" rx="3"/>
+            <rect x="156" y="26" width="58" height="46" rx="3"/><rect x="234" y="26" width="58" height="46" rx="3"/>
+          </g>
+          <g font-size="10.5" fill="var(--chart-ink)" text-anchor="middle">
+            <text x="29" y="46">Ar-cond.</text><text x="29" y="60">(carga)</text>
+            <text x="107" y="46">Inversor</text><text x="107" y="60">FV / BESS</text>
+            <text x="185" y="46">Carregador</text><text x="185" y="60">VE</text>
+            <text x="263" y="46">Gateway</text><text x="263" y="60">doméstico</text>
+          </g>
+          <rect x="330" y="20" width="92" height="58" rx="3" fill="var(--brand-200)" stroke="var(--brand-700)" stroke-width="1.8"/>
+          <g font-size="11" fill="var(--brand-900)" text-anchor="middle" font-weight="600"><text x="376" y="44">Medidor</text><text x="376" y="60">inteligente</text></g>
+          <g stroke="var(--s1)" stroke-width="1.4" stroke-dasharray="3 3">
+            <path d="M58 49 H78"/><path d="M136 49 H156"/><path d="M214 49 H234"/><path d="M292 49 H330"/>
+          </g>
+          <text x="520" y="40" font-size="11" fill="var(--chart-ink2)">Zigbee · Wi-Fi · Bluetooth LE · Modbus · porta óptica</text>
+          <text x="520" y="58" font-size="11" fill="var(--chart-muted)">Domínio do consumidor — fora do perímetro regulado da distribuidora</text>
+        </g>
+        <!-- NAN -->
+        <g transform="translate(150,0)">
+          <g fill="var(--brand-200)" stroke="var(--brand-700)" stroke-width="1.5">
+            <circle cx="20" cy="150" r="9"/><circle cx="72" cy="172" r="9"/><circle cx="130" cy="146" r="9"/>
+            <circle cx="186" cy="176" r="9"/><circle cx="242" cy="150" r="9"/><circle cx="300" cy="174" r="9"/>
+          </g>
+          <g stroke="var(--brand-500)" stroke-width="1.4" fill="none" stroke-dasharray="4 3">
+            <path d="M20 150 L72 172"/><path d="M72 172 L130 146"/><path d="M130 146 L186 176"/><path d="M186 176 L242 150"/>
+            <path d="M242 150 L300 174"/><path d="M20 150 L130 146"/><path d="M130 146 L242 150"/>
+          </g>
+          <rect x="356" y="132" width="104" height="56" rx="3" fill="#ffffff" stroke="var(--brand-800)" stroke-width="2"/>
+          <g font-size="11" fill="var(--brand-900)" text-anchor="middle" font-weight="600"><text x="408" y="156">Concentrador</text><text x="408" y="172">/ Gateway</text></g>
+          <path d="M310 170 L356 164" stroke="var(--brand-700)" stroke-width="1.6" marker-end="url(#arr)"/>
+          <text x="520" y="150" font-size="11" fill="var(--chart-ink2)">RF mesh sub-GHz (Wi-SUN FAN, 902–928 MHz) · PLC banda estreita (G3, PRIME)</text>
+          <text x="520" y="168" font-size="11" fill="var(--chart-ink2)">NB-IoT · LTE-M · LoRaWAN — a camada de maior cardinalidade e maior custo unitário</text>
+        </g>
+        <!-- FAN -->
+        <g transform="translate(150,0)">
+          <g fill="#ffffff" stroke="var(--s2)" stroke-width="1.6">
+            <rect x="0" y="238" width="78" height="44" rx="3"/><rect x="98" y="238" width="78" height="44" rx="3"/>
+            <rect x="196" y="238" width="78" height="44" rx="3"/><rect x="294" y="238" width="78" height="44" rx="3"/>
+          </g>
+          <g font-size="10.5" fill="var(--chart-ink)" text-anchor="middle">
+            <text x="39" y="256">Religador</text><text x="39" y="270">automático</text>
+            <text x="137" y="256">Regulador</text><text x="137" y="270">de tensão</text>
+            <text x="235" y="256">Banco de</text><text x="235" y="270">capacitores</text>
+            <text x="333" y="256">Chave</text><text x="333" y="270">telecomandada</text>
+          </g>
+          <path d="M408 236 L408 282" stroke="var(--s2)" stroke-width="1.6"/>
+          <path d="M372 260 H408" stroke="var(--s2)" stroke-width="1.4" marker-end="url(#arr)"/>
+          <text x="520" y="252" font-size="11" fill="var(--chart-ink2)">DNP3 / IEC 60870-5-104 sobre rede privativa 450 MHz, celular dedicado ou fibra</text>
+          <text x="520" y="270" font-size="11" fill="var(--chart-muted)">Automação da distribuição: FLISR, Volt-VAr — latência de 100 ms a poucos segundos</text>
+        </g>
+        <!-- WAN -->
+        <g transform="translate(150,0)">
+          <rect x="0" y="340" width="120" height="62" rx="3" fill="#ffffff" stroke="var(--s7)" stroke-width="1.8"/>
+          <g font-size="11" fill="var(--chart-ink)" text-anchor="middle"><text x="60" y="364">Subestação</text><text x="60" y="380">digital (IEDs)</text><text x="60" y="394" font-size="10" fill="var(--chart-muted)">IEC 61850</text></g>
+          <rect x="176" y="340" width="120" height="62" rx="3" fill="#ffffff" stroke="var(--s7)" stroke-width="1.8"/>
+          <g font-size="11" fill="var(--chart-ink)" text-anchor="middle"><text x="236" y="364">PMU / PDC</text><text x="236" y="380">medição fasorial</text><text x="236" y="394" font-size="10" fill="var(--chart-muted)">IEEE C37.118</text></g>
+          <rect x="352" y="340" width="120" height="62" rx="3" fill="var(--surface-2)" stroke="var(--brand-800)" stroke-width="2"/>
+          <g font-size="11" fill="var(--chart-ink)" text-anchor="middle"><text x="412" y="364">Centro de</text><text x="412" y="380">operação</text><text x="412" y="394" font-size="10" fill="var(--chart-muted)">SCADA/DMS/EMS</text></g>
+          <g stroke="var(--s7)" stroke-width="1.8" fill="none">
+            <path d="M120 371 H176" marker-end="url(#arr)"/><path d="M296 371 H352" marker-end="url(#arr)"/>
+          </g>
+          <text x="520" y="358" font-size="11" fill="var(--chart-ink2)">Fibra óptica OPGW/ADSS · MPLS · micro-ondas · satélite (locais remotos)</text>
+          <text x="520" y="376" font-size="11" fill="var(--chart-muted)">Banda alta, latência baixa, disponibilidade 99,99%+ — o elo mais maduro no Brasil</text>
+        </g>
+      </svg>
+    </div>
+    <div class="legend">
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--s1)"></span>Domínio do consumidor</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--brand-700)"></span>Medição e última milha</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--s2)"></span>Automação da distribuição</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--s7)"></span>Transmissão e operação</span>
+    </div>
+    <div class="figure-note"><span>Alcances e contagens de nós são faixas típicas de literatura, não limites normativos; variam com densidade urbana e topologia do alimentador. HAN = <i>Home Area Network</i>; NAN = <i>Neighborhood</i>; FAN = <i>Field</i>; WAN = <i>Wide Area</i>.</span><span><b>Fonte:</b> elaboração própria sobre modelos de referência NIST SP 1108r4 (2021) e IEEE 2030 (2011), e taxonomia de <a class="cite" href="https://digitalcommons.unl.edu/electricalengineeringfacpub/316" target="_blank" rel="noopener">Yan et al., IEEE COMST, 2013</a></span></div>
+  </div>
+
+  <h3 class="sub-h"><span class="tagnum mono">3.1</span>O que muda de camada para camada</h3>
+      <p class="body-p">A tentação é tratar as quatro camadas como escalas do mesmo problema. Não são — o que muda qualitativamente é <b>qual métrica é escassa</b>:</p>
+  <ul class="body-l">
+    <li><b>HAN/BAN.</b> Escassez de <i>governança</i>: a rede é do consumidor, a distribuidora não controla o Wi-Fi da casa. Daí a relevância da porta de comunicação do medidor e de perfis de interoperabilidade — e, no Brasil, da discussão regulatória sobre quais dados o consumidor pode acessar localmente.</li>
+    <li><b>NAN.</b> Escassez de <i>custo por nó</i>. Com milhões de pontos, R$ 20 a mais por módulo é um impacto de dezenas de milhões. É aqui que PLC e RF mesh ganham de celular, e onde se concentra a inovação.</li>
+    <li><b>FAN.</b> Escassez de <i>cobertura confiável em campo</i>, inclusive em contingência. Religador em zona rural sem cobertura celular é o caso de uso canônico de rede privativa.</li>
+    <li><b>WAN.</b> Escassez de <i>determinismo</i>, não de banda. Fibra resolve banda; o problema é jitter, failover e sincronismo.</li>
+  </ul>
+
+  <div class="callout"><b>Nota terminológica.</b> A literatura usa NAN e FAN de forma inconsistente: parte dos autores (e o padrão Wi-SUN) chama de FAN justamente a rede de medidores; outra parte reserva FAN para equipamentos de rede (religadores, reguladores) e NAN para medição. Nesta aula: <b>NAN = medição</b>, <b>FAN = equipamentos de automação</b>. Ao ler qualquer artigo, verifique a definição adotada antes de comparar números.</div>
+</section>
+
+<section class="sec" id="s04" data-title="Requisitos por aplicação">
+  <div class="sec-head"><span class="sec-num mono">04</span><h2>Requisitos por Aplicação: o Orçamento de Tempo</h2></div>
+  <p class="lede">Esta é a seção central da aula. Antes de escolher tecnologia, é preciso saber <b>qual é o número</b> — e, em comunicação para sistemas elétricos, o número mais duro vem da IEC 61850-5, que classifica mensagens por tipo e por classe de desempenho.</p>
+
+  <div class="figure">
+    <span class="figure-kicker">Tabela 1 — requisito normativo</span>
+    <div class="figure-title">Tempos de transferência da IEC 61850-5 por tipo de mensagem e classe de desempenho</div>
+    <table class="data-table">
+      <thead><tr><th>Tipo</th><th>Descrição</th><th>Classe P1</th><th>Classes P2 / P3</th></tr></thead>
+      <tbody>
+        <tr><td><b>1A</b></td><td>Trip — mensagem rápida crítica<small>Comando de abertura de disjuntor; a mensagem mais exigente da subestação</small></td><td class="num">10 ms</td><td class="num">3 ms</td></tr>
+        <tr><td><b>1B</b></td><td>Outras mensagens rápidas<small>Bloqueios, intertravamentos, sinalizações de proteção não-trip</small></td><td class="num">100 ms</td><td class="num">20 ms</td></tr>
+        <tr><td><b>2</b></td><td>Média velocidade<small>Comandos e eventos de automação onde a resposta pode esperar um ciclo de supervisão</small></td><td class="num">100 ms</td><td class="num">100 ms</td></tr>
+        <tr><td><b>3</b></td><td>Baixa velocidade<small>Parametrização, leituras não críticas, atualização de telemetria lenta</small></td><td class="num">500 ms</td><td class="num">500 ms</td></tr>
+        <tr><td><b>4</b></td><td>Dados brutos (<i>raw data</i>)<small>Amostras de corrente e tensão do barramento de processo — <i>Sampled Values</i></small></td><td class="num">10 ms</td><td class="num">3 ms</td></tr>
+        <tr><td><b>5</b></td><td>Transferência de arquivo<small>Oscilografia, registros de perturbação, atualização de firmware</small></td><td class="num">&gt; 1.000 ms</td><td class="num">&gt; 1.000 ms</td></tr>
+      </tbody>
+    </table>
+    <div class="figure-note"><span><b>Leitura correta do valor:</b> 3 ms é o <i>tempo de transferência total</i>, do instante em que a aplicação emissora entrega o dado à pilha até o instante em que a aplicação receptora o recebe — inclui processamento nos dois IEDs, não só o trânsito na rede. A literatura de referência indica ainda que, para P2/P3, mensagens tipo 1A devem cumprir 3 ms em 99,9999% dos casos, com limite superior de 18 ms para o restante.</span><span><b>Fonte:</b> tabela da IEC 61850-5, reproduzida em <a class="cite" href="https://library.e.abb.com/public/dc853877595c4086ae649ca29924c0ec/Paper_GOOSE%20Utilisation%20in%20Protection.pdf" target="_blank" rel="noopener">ABB — <i>GOOSE utilisation in protection applications</i></a> e em <a class="cite" href="https://cdn.selinc.com/assets/Literature/Publications/Technical%20Papers/6335_IEC61850_DH-DD_20080912_Web.pdf" target="_blank" rel="noopener">SEL, 2008</a></span></div>
+  </div>
+
+  <div class="callout warn"><b>Atenção a fontes de internet sobre este número.</b> Páginas comerciais citam "≤ 1 ms" ou tabelas com sete classes para o tipo 1A. Não conferem com a tabela da norma reproduzida nas fontes primárias acima. Em trabalho de mestrado, cite a IEC 61850-5 diretamente ou um artigo revisado por pares que a reproduza — nunca um blog de fornecedor.</div>
+
+  <h3 class="sub-h"><span class="tagnum mono">4.1</span>O orçamento de tempo de uma mensagem de trip</h3>
+  <p class="body-p">O valor normativo de 3 ms é um <b>orçamento</b> a ser repartido entre todos os elementos do caminho. Isso é o que torna o requisito difícil: nenhuma parcela individual é grande, mas a soma estoura com facilidade quando se insere um elemento não previsto — um firewall com inspeção profunda, um switch com <i>store-and-forward</i> em cascata, um túnel VPN, um enlace de rádio com retransmissão.</p>
+
+  <div class="figure">
+    <span class="figure-kicker">Figura 2 — decomposição ilustrativa</span>
+    <div class="figure-title">Repartição típica do orçamento de 3 ms em um caminho GOOSE de barramento de estação</div>
+    <div class="chart-scroll">
+      <svg viewBox="0 0 860 190" width="100%" style="max-width:860px" role="img" aria-label="Barra horizontal única dividida em parcelas do orçamento de tempo: processamento no IED emissor, enfileiramento, transmissão, switches, IED receptor e margem">
+        <g font-size="11" fill="var(--chart-muted)" font-family="IBM Plex Mono">
+          <text x="0" y="14">0 ms</text><text x="268" y="14" text-anchor="middle">1 ms</text>
+          <text x="536" y="14" text-anchor="middle">2 ms</text><text x="804" y="14" text-anchor="end">3 ms</text>
+        </g>
+        <line x1="0" y1="22" x2="804" y2="22" stroke="var(--chart-axis)"/>
+        <g>
+          <rect x="0" y="34" width="186" height="42" rx="0" fill="var(--s1)"/>
+          <rect x="188" y="34" width="66" height="42" fill="var(--s4)"/>
+          <rect x="256" y="34" width="40" height="42" fill="var(--s3)"/>
+          <rect x="298" y="34" width="134" height="42" fill="var(--s7)"/>
+          <rect x="434" y="34" width="186" height="42" fill="var(--s2)"/>
+          <rect x="622" y="34" width="182" height="42" fill="var(--chart-grid)"/>
+        </g>
+        <g font-size="10.5" fill="#ffffff" font-weight="600" text-anchor="middle" font-family="IBM Plex Mono">
+          <text x="93" y="60">0,70</text><text x="221" y="60">0,25</text><text x="276" y="60">0,15</text><text x="365" y="60">0,50</text><text x="527" y="60">0,70</text>
+        </g>
+        <text x="713" y="60" font-size="10.5" fill="var(--chart-ink2)" font-weight="600" text-anchor="middle" font-family="IBM Plex Mono">0,70 (margem)</text>
+        <g font-size="11" fill="var(--chart-ink)">
+          <text x="0" y="104">Codificação e publicação no IED emissor</text>
+          <text x="0" y="122">Enfileiramento e serialização (100 Mbps, quadro de ~150 bytes)</text>
+          <text x="0" y="140">Propagação no cabo (desprezível em subestação)</text>
+          <text x="0" y="158">2 switches em cascata, store-and-forward com priorização VLAN/802.1Q</text>
+          <text x="440" y="104">Decodificação e atuação no IED receptor</text>
+          <text x="440" y="122">Margem de projeto remanescente</text>
+        </g>
+        <g>
+          <rect x="-1" y="96" width="9" height="9" fill="var(--s1)" opacity="0"/>
+        </g>
+      </svg>
+    </div>
+    <div class="legend">
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--s1)"></span>IED emissor</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--s4)"></span>Enfileiramento/serialização</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--s3)"></span>Propagação</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--s7)"></span>Comutação (2 switches)</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--s2)"></span>IED receptor</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--chart-grid)"></span>Margem</span>
+    </div>
+    <div class="figure-note"><span><b>Valores ilustrativos — não medidos.</b> A finalidade da figura é o exercício de repartição do orçamento, não a predição de desempenho de um equipamento específico. Em projeto real, cada parcela vem de ensaio ou de folha de dados do fabricante; o total deve ser verificado por medição com injeção de tráfego de fundo. O requisito normativo repartido é o da Tabela 1 (tipo 1A, P2/P3 = 3 ms).</span><span><b>Fonte:</b> elaboração própria; requisito-teto conforme IEC 61850-5</span></div>
+  </div>
+
+  <h3 class="sub-h"><span class="tagnum mono">4.2</span>Fora da subestação: ordens de grandeza por domínio</h3>
+  <p class="body-p">Para aplicações de distribuição e medição não há uma tabela normativa equivalente à da IEC 61850-5. A literatura de referência consolida faixas típicas, úteis para dimensionamento preliminar — e que devem ser tratadas como tal, não como requisito:</p>
+
+  <div class="figure">
+    <span class="figure-kicker">Figura 3 — compilação de literatura</span>
+    <div class="figure-title">Latência admissível por domínio de aplicação (escala logarítmica)</div>
+    <div class="chart-scroll">
+      <svg viewBox="0 0 900 330" width="100%" style="max-width:900px" role="img" aria-label="Gráfico de pontos em escala logarítmica mostrando a latência admissível de sete domínios de aplicação, de proteção em 3 milissegundos a medição para faturamento em horas">
+        <g font-size="11" fill="var(--chart-muted)" font-family="IBM Plex Mono">
+          <text x="300" y="300" text-anchor="middle">3 ms</text>
+          <text x="370" y="316" text-anchor="middle">10 ms</text>
+          <text x="470" y="300" text-anchor="middle">100 ms</text>
+          <text x="570" y="316" text-anchor="middle">1 s</text>
+          <text x="670" y="300" text-anchor="middle">10 s</text>
+          <text x="770" y="316" text-anchor="middle">100 s</text>
+          <text x="870" y="300" text-anchor="middle">1 h</text>
+        </g>
+        <g stroke="var(--chart-grid)" stroke-width="1">
+          <line x1="370" y1="18" x2="370" y2="286"/><line x1="470" y1="18" x2="470" y2="286"/>
+          <line x1="570" y1="18" x2="570" y2="286"/><line x1="670" y1="18" x2="670" y2="286"/>
+          <line x1="770" y1="18" x2="770" y2="286"/><line x1="870" y1="18" x2="870" y2="286"/>
+        </g>
+        <line x1="270" y1="286" x2="878" y2="286" stroke="var(--chart-axis)"/>
+        <line x1="300" y1="18" x2="300" y2="286" stroke="var(--s8)" stroke-width="1.6" stroke-dasharray="4 3"/>
+        <text x="296" y="14" font-size="10.5" font-family="IBM Plex Mono" fill="var(--s8)" text-anchor="end">teto IEC 61850-5 tipo 1A</text>
+        <g font-size="12" fill="var(--chart-ink)">
+          <text x="0" y="42">Proteção — trip GOOSE / SV</text>
+          <text x="0" y="78">Teleproteção de linha</text>
+          <text x="0" y="114">Medição fasorial (WAMS)</text>
+          <text x="0" y="150">Automação da distribuição (FLISR)</text>
+          <text x="0" y="186">Controle de tensão / Volt-VAr</text>
+          <text x="0" y="222">DER e resposta à demanda</text>
+          <text x="0" y="258">Medição para faturamento (AMI)</text>
+        </g>
+        <!-- faixas: x = 270 + 100*log10(ms/1) ajustado para 1ms=270 -->
+        <g stroke-linecap="round">
+          <line x1="300" y1="38" x2="318" y2="38" stroke="var(--s8)" stroke-width="5"/>
+          <line x1="318" y1="74" x2="370" y2="74" stroke="var(--s8)" stroke-width="5"/>
+          <line x1="440" y1="110" x2="500" y2="110" stroke="var(--s7)" stroke-width="5"/>
+          <line x1="470" y1="146" x2="570" y2="146" stroke="var(--s2)" stroke-width="5"/>
+          <line x1="570" y1="182" x2="670" y2="182" stroke="var(--s2)" stroke-width="5"/>
+          <line x1="540" y1="218" x2="690" y2="218" stroke="var(--s4)" stroke-width="5"/>
+          <line x1="740" y1="254" x2="878" y2="254" stroke="var(--s1)" stroke-width="5"/>
+        </g>
+        <g fill="#ffffff" stroke-width="2">
+          <circle cx="300" cy="38" r="5.5" stroke="var(--s8)"/><circle cx="318" cy="38" r="5.5" stroke="var(--s8)"/>
+          <circle cx="318" cy="74" r="5.5" stroke="var(--s8)"/><circle cx="370" cy="74" r="5.5" stroke="var(--s8)"/>
+          <circle cx="440" cy="110" r="5.5" stroke="var(--s7)"/><circle cx="500" cy="110" r="5.5" stroke="var(--s7)"/>
+          <circle cx="470" cy="146" r="5.5" stroke="var(--s2)"/><circle cx="570" cy="146" r="5.5" stroke="var(--s2)"/>
+          <circle cx="570" cy="182" r="5.5" stroke="var(--s2)"/><circle cx="670" cy="182" r="5.5" stroke="var(--s2)"/>
+          <circle cx="540" cy="218" r="5.5" stroke="var(--s4)"/><circle cx="690" cy="218" r="5.5" stroke="var(--s4)"/>
+          <circle cx="740" cy="254" r="5.5" stroke="var(--s1)"/>
+        </g>
+        <g font-size="10.5" font-family="IBM Plex Mono" fill="var(--chart-ink2)">
+          <text x="330" y="42">3–5 ms</text><text x="382" y="78">5–10 ms</text><text x="512" y="114">20–100 ms</text>
+          <text x="582" y="150">100 ms – 1 s</text><text x="682" y="186">1–10 s</text><text x="702" y="222">0,5–5 s</text><text x="760" y="242">horas</text>
+        </g>
+      </svg>
+    </div>
+    <div class="legend">
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--s8)"></span>Proteção (normativo)</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--s7)"></span>Monitoramento sistêmico</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--s2)"></span>Automação da distribuição</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--s4)"></span>Recursos distribuídos</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--s1)"></span>Medição</span>
+    </div>
+    <div class="figure-note"><span><b>Faixas típicas de literatura, não requisitos normativos</b> — exceto a linha de proteção, ancorada na IEC 61850-5. Medição fasorial: o parâmetro primário é a taxa de reporte (tipicamente 10 a 60 quadros/s em sistemas de 60 Hz), e não a latência de enlace; a faixa indicada é de aplicação de monitoramento, não de controle em malha fechada. Para AMI, o requisito relevante é a <i>janela de coleta</i> (coletar N leituras até um horário), não a latência de cada mensagem.</span><span><b>Fonte:</b> compilação própria sobre <a class="cite" href="https://digitalcommons.unl.edu/electricalengineeringfacpub/316" target="_blank" rel="noopener">Yan, Qian, Sharif &amp; Tipper, IEEE COMST 15(1), 2013</a>, e NIST SP 1108r4 (2021)</span></div>
+  </div>
+
+  <div class="block reading">
+    <div class="block-head"><span class="block-kind">Leitura 1</span><span class="block-title">Yan, Qian, Sharif &amp; Tipper (2013) — requisitos de comunicação</span></div>
+    <div class="block-body">
+      <p><b>O que ler:</b> <i>A Survey on Smart Grid Communication Infrastructures: Motivations, Requirements and Challenges</i>, IEEE Communications Surveys &amp; Tutorials, v. 15, n. 1, p. 5–20, 2013. Ler a seção de <b>requisitos</b> (Seção II–III) e a tabela comparativa de tecnologias. Cópia de acesso aberto no repositório institucional da University of Nebraska–Lincoln: <a class="cite" href="https://digitalcommons.unl.edu/electricalengineeringfacpub/316" target="_blank" rel="noopener">digitalcommons.unl.edu/electricalengineeringfacpub/316</a>.</p>
+      <p><b>Objetivo da leitura:</b> identificar como os autores derivam requisitos de comunicação a partir de aplicações, e não de tecnologias — e perceber que a taxonomia deles (HAN/NAN/WAN) é anterior à consolidação do Wi-SUN e do NB-IoT, o que datou a parte tecnológica do artigo sem invalidar a parte de requisitos.</p>
+      <p><b>Perguntas de verificação:</b></p>
+      <ol>
+        <li>Quais requisitos os autores tratam como <i>hard</i> (não negociáveis) e quais como <i>soft</i>? Que consequência isso tem para o dimensionamento?</li>
+        <li>O artigo é de 2013. Que afirmação tecnológica dele você consideraria <b>desatualizada</b> hoje, e com qual evidência da Seção 5 desta aula você a corrigiria?</li>
+        <li>A análise de requisitos do artigo se aplicaria sem mudança ao caso brasileiro? Que restrição local (regulatória, geográfica, econômica) o artigo não considera?</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="block discuss">
+    <div class="block-head"><span class="block-kind">Discussão 2</span><span class="block-title">Quem paga a margem?</span></div>
+    <div class="block-body">
+      <p>Na Figura 2, 0,70 ms de 3 ms (≈23%) foram reservados como margem de projeto. Um fornecedor propõe eliminar essa margem para permitir o uso de switches mais baratos, argumentando que "o valor medido em bancada ficou em 2,4 ms".</p>
+      <p><b>Pergunta:</b> que argumentos técnicos você usaria para recusar — ou aceitar — a proposta? Considere especificamente: (a) o comportamento do tempo de comutação sob tráfego de fundo e tempestade de broadcast; (b) o requisito estatístico (99,9999%) mencionado na nota da Tabela 1; (c) o que acontece com o orçamento quando se adiciona redundância PRP ou criptografia na mensagem.</p>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="s05" data-title="Meio físico e tecnologias de enlace">
+  <div class="sec-head"><span class="sec-num mono">05</span><h2>Meio Físico e Tecnologias de Enlace</h2></div>
+  <p class="lede">Não existe tecnologia vencedora. Existe correspondência entre requisito e meio — e a decisão real é sempre multicritério: desempenho, custo por nó, cobertura, controle do ativo e risco de obsolescência.</p>
+
+  <div class="figure">
+    <span class="figure-kicker">Tabela 2 — comparativo de tecnologias</span>
+    <div class="figure-title">Tecnologias de enlace para redes elétricas inteligentes: faixas de desempenho documentadas</div>
+    <table class="data-table">
+      <thead><tr><th>Tecnologia</th><th>Faixa / espectro</th><th>Taxa de dados</th><th>Alcance</th><th>Observação crítica</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>PLC banda estreita</b><small>G3-PLC</small></td>
+          <td class="num">35,9–90,6 kHz (CENELEC-A)<br>154,7–487,5 kHz (FCC)</td>
+          <td class="num">~20–40 kbps (CENELEC-A)<br>~200–400 kbps (FCC)</td>
+          <td class="num">centenas de m<br>por trecho de BT</td>
+          <td>Não precisa de espectro licenciado nem de cobertura de terceiros, mas o canal é hostil: ruído impulsivo, atenuação variável e o transformador de distribuição funciona como barreira.</td>
+        </tr>
+        <tr>
+          <td><b>PLC banda estreita</b><small>PRIME</small></td>
+          <td class="num">42–89 kHz (v1.3)<br>até ~471 kHz (v1.4)</td>
+          <td class="num">~21–128 kbps (CENELEC-A)<br>~40 kbps–1 Mbps (v1.4 full band)</td>
+          <td class="num">centenas de m<br>por trecho de BT</td>
+          <td>Taxas brutas de 5,4 kbps (modo robusto) a 128,6 kbps (D8PSK) na CENELEC-A. Comparar "efetivo" com "bruto" entre fornecedores é erro frequente de especificação.</td>
+        </tr>
+        <tr>
+          <td><b>RF mesh sub-GHz</b><small>Wi-SUN FAN</small></td>
+          <td class="num">sub-GHz; no Brasil<br>902–907,5 e 915–928 MHz</td>
+          <td class="num">FAN 1.0: 50–300 kbps (FSK)<br>FAN 1.1: 12,5 kbps–2,4 Mbps (OFDM)</td>
+          <td class="num">~700–800 m por salto<br>a 50 kbps FSK</td>
+          <td>Modo obrigatório em todas as regiões: 2-FSK a 50 kbps, espaçamento de 200 kHz. FAN 1.1 permite troca dinâmica de taxa dentro da mesma PAN; FAN 1.0 usa taxa única pré-configurada para toda a rede.</td>
+        </tr>
+        <tr>
+          <td><b>LoRaWAN</b></td>
+          <td class="num">sub-GHz, radiação restrita</td>
+          <td class="num">~0,3–50 kbps</td>
+          <td class="num">km (urbano a rural)</td>
+          <td>Arquitetura estrela-de-estrelas, <i>downlink</i> muito limitado (Classe A). Serve telemetria esparsa; não serve comando com confirmação em tempo determinado.</td>
+        </tr>
+        <tr>
+          <td><b>NB-IoT</b><small>3GPP Rel-13</small></td>
+          <td class="num">licenciado (operadora)</td>
+          <td class="num">~60–66 kbps UL<br>~26–30 kbps DL</td>
+          <td class="num">MCL 164 dB<br>(penetração em subsolo)</td>
+          <td>Latência típica de <b>1,6 a 10 s</b>: adequado a leitura e alarme, inadequado a controle. Alvo de projeto citado na literatura: 10 anos de bateria com 200 bytes/dia a 164 dB.</td>
+        </tr>
+        <tr>
+          <td><b>LTE-M (Cat-M1)</b></td>
+          <td class="num">licenciado (operadora)</td>
+          <td class="num">~1 Mbps</td>
+          <td class="num">MCL ~156–160 dB<br>(fontes divergem)</td>
+          <td>Latência típica de 10–20 ms e suporte a voz/mobilidade: cobre casos que o NB-IoT não cobre, a custo de módulo e consumo maiores.</td>
+        </tr>
+        <tr>
+          <td><b>Fibra óptica</b><small>OPGW / ADSS</small></td>
+          <td class="num">—</td>
+          <td class="num">Gbps</td>
+          <td class="num">dezenas a centenas de km</td>
+          <td>Atraso de propagação da ordem de 5 µs/km (≈1 ms a cada 200 km): o único meio que entrega folga confortável dentro de um orçamento de 3 ms em enlaces longos. Custo de implantação domina.</td>
+        </tr>
+        <tr>
+          <td><b>Satélite</b><small>GEO / LEO</small></td>
+          <td class="num">licenciado</td>
+          <td class="num">kbps a Mbps</td>
+          <td class="num">global</td>
+          <td>Atraso de ida e volta de centenas de ms em GEO; dezenas de ms em constelações LEO. Para sítios isolados (Amazônia, ilhas), é frequentemente a única opção — e nunca para proteção.</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="figure-note"><span><b>Como ler esta tabela:</b> os valores são faixas documentadas em especificação ou literatura, não garantias de desempenho em campo. Taxas de PLC variam entre "efetiva" e "bruta/PHY" conforme a fonte; números de MCL de LTE-M divergem entre fontes (156 dB em material 3GPP/IETF, ~160 dB em material de fornecedor). Verifique sempre a versão (<i>release</i>) e o modo a que o número se refere.</span><span><b>Fontes:</b> <a class="cite" href="https://wi-sun.org/wp-content/uploads/Wi-SUN-Overview-NAInterop-August-2025-r2.pdf" target="_blank" rel="noopener">Wi-SUN Alliance, ago. 2025</a> · <a class="cite" href="https://www.ti.com/lit/wp/slyy038/slyy038.pdf" target="_blank" rel="noopener">TI, <i>Implementing PRIME</i></a> · <a class="cite" href="https://g3-alliance.com/download/84/presentations/3252/g3-alliance-alliance-webinar-regulatory-regime-and-g3-alliance-deployments-in-fcc-band-in-europe-june-15th-2022.pdf" target="_blank" rel="noopener">G3-PLC Alliance, 2022</a> · <a class="cite" href="https://www.ietf.org/proceedings/97/slides/slides-97-lpwan-30-nb-iot-presentation-00.pdf" target="_blank" rel="noopener">Ratilainen, IETF 97 LPWAN</a> · <a class="cite" href="https://arxiv.org/pdf/1802.04222" target="_blank" rel="noopener">Raza et al., <i>Comparative Survey of LPWA</i></a> · <a class="cite" href="https://www.silabs.com/documents/public/presentations/wsn-300-building-large-scale-smart-city-networks-with-wi-sun.pdf" target="_blank" rel="noopener">Silicon Labs, WSN-300</a></span></div>
+  </div>
+
+  <h3 class="sub-h"><span class="tagnum mono">5.1</span>Por que RF mesh venceu a última milha no Brasil (e PLC não)</h3>
+  <p class="body-p">A escolha dominante no setor brasileiro migrou para rede mesh em 900 MHz com padrão Wi-SUN, com desenvolvimentos próprios em distribuidoras como Copel, Celesc e Cemig; à época da reportagem o parque instalado estava repartido aproximadamente "meio a meio" entre Wi-SUN e PLC PRIME. O maior projeto AMI Wi-SUN da América Latina, segundo o fornecedor, é brasileiro: mais de 1,3 milhão de medidores, com primeira fase de entregas iniciada em agosto de 2020.</p>
+      <ul class="body-l">
+    <li><b>A rede BT brasileira é eletricamente ruidosa e topologicamente fragmentada</b> — muitos transformadores de pequeno porte atendendo poucos consumidores. Como o PLC segue o condutor e o transformador bloqueia o sinal, isso multiplica o número de pontos de concentração necessários.</li>
+    <li><b>RF mesh desacopla a comunicação da topologia elétrica.</b> Um salto de rádio de ~800 m alcança consumidores de vários transformadores diferentes, e a malha se reorganiza sozinha quando um nó cai.</li>
+    <li><b>A faixa usada é de radiação restrita</b> (Seção 6): não há custo de espectro nem dependência de operadora, o que reduz o custo recorrente por nó — o parâmetro escasso da camada NAN.</li>
+    <li><b>Contraponto honesto:</b> PLC continua competitivo em medição centralizada (medidores agrupados em poste ou caixa, comum em áreas de alta perda não técnica) e em cenários de alta densidade vertical, onde o rádio sofre com atenuação por estrutura.</li>
+  </ul>
+
+  <div class="callout"><b>Erro de projeto a evitar.</b> Especificar uma única tecnologia para "toda a área de concessão". Numa distribuidora brasileira típica, o resultado econômico ótimo mistura RF mesh em área urbana densa, PLC em medição centralizada, celular (NB-IoT/LTE-M) em pontos isolados com cobertura e rede privativa ou satélite onde não há cobertura. O custo dessa heterogeneidade recai sobre o sistema de cabeça e sobre a gestão de ciclo de vida — não sobre o módulo.</div>
+
+  <div class="block reading">
+    <div class="block-head"><span class="block-kind">Leitura 2</span><span class="block-title">Abrahamsen, Ai &amp; Cheffena (2021) — panorama atualizado de tecnologias</span></div>
+    <div class="block-body">
+      <p><b>O que ler:</b> ABRAHAMSEN, F. E.; AI, Y.; CHEFFENA, M. <i>Communication Technologies for Smart Grid: A Comprehensive Survey</i>, 2021 — <a class="cite" href="https://arxiv.org/abs/2103.11657" target="_blank" rel="noopener">arXiv:2103.11657</a>, acesso aberto. Ler a parte dedicada às tecnologias de camada física e às arquiteturas de rede, que atualiza em quase uma década o levantamento de Yan et al. da Leitura 1.</p>
+      <p><b>Objetivo da leitura:</b> construir seu próprio quadro comparativo de tecnologias, confrontando as faixas apresentadas pelos autores com as da Tabela 2 deste material — que foram extraídas de especificação de aliança e de documentos técnicos, não de <i>survey</i>. Divergências entre as duas fontes são esperadas e são o ponto do exercício.</p>
+      <p><b>Perguntas de verificação:</b></p>
+      <ol>
+        <li>Onde os números do <i>survey</i> divergem dos da Tabela 2, e qual das duas fontes você consideraria mais confiável para cada caso — considerando que um <i>survey</i> compila literatura e uma especificação de aliança define o padrão?</li>
+        <li>Que tecnologia aparece no artigo de 2021 com peso que não tinha em 2013? O que mudou no ecossistema para isso ocorrer?</li>
+        <li>O artigo trata do caso europeu e norte-americano. Quais das conclusões dele <b>não</b> se transferem para a rede de baixa tensão brasileira, e por quê?</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="s06" data-title="Espectro e redes privativas no Brasil">
+  <div class="sec-head"><span class="sec-num mono">06</span><h2>Espectro e Redes Privativas no Brasil</h2></div>
+  <p class="lede">Aqui a engenharia encontra a regulação: a disponibilidade de espectro é uma restrição de projeto tão real quanto a relação sinal-ruído — e, no Brasil, é hoje uma restrição <b>em aberto</b>.</p>
+
+  <h3 class="sub-h"><span class="tagnum mono">6.1</span>Radiação restrita: a faixa que sustenta o RF mesh</h3>
+  <p class="body-p">As redes mesh de medidores operam em faixas de <b>radiação restrita</b>, reguladas pela <a class="cite" href="https://www.anatel.gov.br/legislacao/resolucoes/2017/936-resolucao-680" target="_blank" rel="noopener">Resolução Anatel nº 680/2017</a>, que estabelece as características técnicas para que um equipamento de radiocomunicação seja considerado de radiação restrita, nos termos do art. 163, §2º, I da Lei nº 9.472/1997. Os limites técnicos detalhados estão no <a class="cite" href="https://informacoes.anatel.gov.br/legislacao/index.php/component/content/article?id=1139" target="_blank" rel="noopener">Ato nº 14.448/2017</a>, que impõe condições específicas a equipamentos com espalhamento espectral ou outra modulação digital nas faixas <b>902–907,5 MHz</b>, <b>915–928 MHz</b>, 2.400–2.483,5 MHz e 5.725–5.850 MHz.</p>
+  <div class="callout warn"><b>Consequência de projeto:</b> operar em radiação restrita significa operar <b>sem direito de proteção contra interferência</b>. Não há garantia de qualidade de serviço regulatória. Para medição, isso é aceitável (a aplicação tolera atraso e retransmissão). Para teleproteção ou automação crítica, não é — e esse é precisamente o motivo pelo qual o setor elétrico brasileiro busca espectro próprio.</div>
+
+  <h3 class="sub-h"><span class="tagnum mono">6.2</span>A disputa pela faixa de 450 MHz</h3>
+  <p class="body-p">A faixa de 450 MHz é atraente para utilities por propagação favorável — alcance e penetração superiores em área rural com menos sítios. Distribuidoras como Copel e Neoenergia investiram em redes privativas nessa faixa. O caso é instrutivo porque mostra risco regulatório materializando-se como risco de engenharia.</p>
+
+  <div class="figure">
+    <span class="figure-kicker">Figura 4 — cronologia regulatória</span>
+    <div class="figure-title">Faixa de 450 MHz: da destinação secundária ao impasse de 2026</div>
+    <table class="data-table">
+      <thead><tr><th>Momento</th><th>Fato</th><th>Situação</th></tr></thead>
+      <tbody>
+        <tr><td class="num">antes de 2026</td><td>Faixa destinada em caráter <b>secundário</b> a comunicações de missão crítica de <i>utilities</i>; Copel e Neoenergia montam redes privativas com base nessa destinação.</td><td><span class="status-pill ok">implantado</span></td></tr>
+        <tr><td class="num">jan. 2026</td><td>Anatel inclui a faixa entre as a serem licitadas para o SMP (telefonia móvel pública). Concessionárias de energia pedem formalmente a desistência do leilão.</td><td><span class="status-pill risk">conflito</span></td></tr>
+        <tr><td class="num">mar. 2026</td><td>Área técnica da Anatel propõe que a faixa fique com SLP (Serviço Limitado Privado); UTCAL propõe grupo de estudo com ANEEL, Anatel e elétricas. Setor alega <b>R$ 300 milhões</b> já investidos e pede segurança jurídica.</td><td><span class="status-pill wip">em discussão</span></td></tr>
+        <tr><td class="num">1º abr. 2026</td><td><b>Resolução Interna nº 537</b> e <b>Acórdão nº 88</b>: a faixa é excluída da Agenda Regulatória 2025–2026 e do planejamento de licitações do SMP. Justificativa técnica: ecossistema de dispositivos compatíveis não maduro. Os pedidos das elétricas são indeferidos, mas o cronograma é revisto de ofício.</td><td><span class="status-pill ok">leilão retirado</span></td></tr>
+        <tr><td class="num">situação atual</td><td>Anatel declara que buscará enquadramento para uso da faixa por <i>utilities</i> em <b>caráter primário</b> para missão crítica; discute-se leilão restrito a <i>utilities</i>. Nenhum ato definitivo publicado.</td><td><span class="status-pill wip">em aberto</span></td></tr>
+      </tbody>
+    </table>
+    <div class="figure-note"><span><b>Fontes de imprensa especializada, não atos consultados diretamente.</b> Os números de resolução e acórdão e a data de 1º abr. 2026 foram reportados pela imprensa setorial; antes de citar em dissertação, confirme o texto dos atos no portal de legislação da Anatel. A data exata da destinação secundária original divergiu entre as fontes consultadas e por isso não é afirmada aqui.</span><span><b>Fonte:</b> <a class="cite" href="https://teletime.com.br/26/01/2026/concessionarias-450-mhz/" target="_blank" rel="noopener">TELETIME, 26 jan. 2026</a> · <a class="cite" href="https://www.mobiletime.com.br/noticias/20/03/2026/450-mhz-area-tecnica/" target="_blank" rel="noopener">Mobile Time, 20 mar. 2026</a> · <a class="cite" href="https://teletime.com.br/19/03/2026/450-mhz-utcal-grupo/" target="_blank" rel="noopener">TELETIME, 19 mar. 2026</a> · <a class="cite" href="https://www.minhaoperadora.com.br/2026/04/anatel-retira-faixa-de-450-mhz-do-calendario-de-licitacoes-de-espectro.html" target="_blank" rel="noopener">Minha Operadora, abr. 2026</a> · <a class="cite" href="https://www.mobiletime.com.br/noticias/01/04/2026/450-mhz-cancelado/" target="_blank" rel="noopener">Mobile Time, 1º abr. 2026</a></span></div>
+  </div>
+
+  <div class="block discuss">
+    <div class="block-head"><span class="block-kind">Discussão 3</span><span class="block-title">Risco regulatório como variável de projeto</span></div>
+    <div class="block-body">
+      <p>Você é responsável pela arquitetura de comunicação de automação de distribuição de uma distribuidora de médio porte. O orçamento permite uma das três opções, para um horizonte de 15 anos:</p>
+      <ol>
+        <li>Rede privativa em 450 MHz, hoje em caráter secundário, com promessa de enquadramento primário;</li>
+        <li>Contrato de APN dedicada com duas operadoras celulares (redundância de operadora), com SLA contratual;</li>
+        <li>Rede mesh própria em radiação restrita (902–928 MHz), aceitando ausência de proteção contra interferência.</li>
+      </ol>
+      <p><b>Pergunta:</b> qual você escolhe e como estrutura o contrato ou o projeto para <b>limitar</b> o risco da opção escolhida? Trate explicitamente: obsolescência tecnológica, dependência de terceiros, risco regulatório e o que acontece em um evento sistêmico em que a rede celular pública também está degradada.</p>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="s07" data-title="Protocolos de medição">
+  <div class="sec-head"><span class="sec-num mono">07</span><h2>Protocolos de Medição: NBR 14522 e DLMS/COSEM</h2></div>
+  <p class="lede">A medição brasileira carrega uma herança própria. Entender a convivência entre a norma nacional de intercâmbio e o padrão internacional DLMS/COSEM é entender por que interoperabilidade de medidores ainda é um problema aberto no país.</p>
+
+  <h3 class="sub-h"><span class="tagnum mono">7.1</span>ABNT NBR 14522 — a herança nacional</h3>
+  <p class="body-p">A <b>ABNT NBR 14522 — Intercâmbio de informações para sistemas de medição de energia elétrica</b> define o padrão de intercâmbio de informações no sistema de medição, com o objetivo declarado de compatibilizar sistemas e equipamentos de medição de procedências diferentes. Ela aparece como referência em procedimentos de homologação de medidores de distribuidoras, ao lado da NBR 14519 (especificação), NBR 14520 (método de ensaio) e NBR 14521 (aceitação de lotes).</p>
+  <p class="body-p">Do ponto de vista de engenharia de comunicação, suas características definidoras são: protocolo <b>orientado a comandos sobre enlace serial</b>, com conjunto fixo de comandos de leitura e parametrização, e <b>sem modelo de objetos extensível</b>. Material acadêmico recente observa que a norma não é diretamente compatível com os principais protocolos industriais modernos — o que a transforma, na prática, em problema de interoperabilidade a ser resolvido por tradução.</p>
+  <div class="callout warn"><b>Implicação concreta.</b> Um parque de medidores em NBR 14522 não é "atualizável por software" para um modelo de informação moderno: falta semântica. Não existe no protocolo um lugar onde dizer "este registro é a energia ativa importada do período fora de ponta do mês anterior" de forma autodescritiva. Esse é exatamente o problema que o DLMS/COSEM resolve, e é a razão de a modernização implicar troca de parque, não atualização de firmware.</div>
+
+  <h3 class="sub-h"><span class="tagnum mono">7.2</span>DLMS/COSEM — o padrão internacional</h3>
+  <p class="body-p">A suíte DLMS/COSEM, normalizada na série IEC 62056 e adotada no Brasil como série <b>ABNT NBR IEC 62056</b>, resolve o problema por estratificação:</p>
+  <div class="grid-2">
+    <div class="card">
+      <span class="tag">Modelo de objetos</span>
+      <h3>IEC 62056-6-2 — classes de interface COSEM</h3>
+      <p>Estabelece blocos construtivos genéricos por métodos orientados a objetos, na forma de <i>classes de interface</i>, para modelar medidores das funcionalidades mais simples às mais complexas. Edição IEC de 2021; adotada pela ABNT com edição de 01/2024.</p>
+    </div>
+    <div class="card">
+      <span class="tag">Identificação do dado</span>
+      <h3>IEC 62056-6-1 — OBIS</h3>
+      <p>Define a estrutura do sistema de identificação de objetos. O código OBIS é o identificador único de todo dado no equipamento de medição — não só valores medidos, mas também valores abstratos de configuração e de comportamento do medidor. Quarta edição: 2023.</p>
+    </div>
+    <div class="card">
+      <span class="tag">Camada de aplicação</span>
+      <h3>IEC 62056-5-3 — camada de aplicação DLMS/COSEM</h3>
+      <p>Especifica estrutura, serviços e protocolos para clientes e servidores DLMS/COSEM. Adotada pela ABNT com edição de 03/2023.</p>
+    </div>
+    <div class="card">
+      <span class="tag">Segurança</span>
+      <h3>Mecanismos de segurança da suíte</h3>
+      <p>A suíte prevê autenticação e proteção criptográfica no nível de aplicação, independente do meio — condição necessária para operações sensíveis como corte remoto e atualização de firmware pelo ar.</p>
+    </div>
+  </div>
+  <p class="body-p" style="margin-top:16px">A separação é o ponto pedagógico: <b>o que</b> é o dado (OBIS) está desacoplado de <b>como</b> ele é modelado (classes de interface), que está desacoplado de <b>como</b> é transportado (camada de aplicação sobre qualquer enlace — PLC, RF mesh, celular). É esse desacoplamento que permite trocar o módulo de comunicação de um medidor sem reescrever o sistema de cabeça.</p>
+
+  <div class="callout"><b>O que a regulação brasileira ainda não fixou.</b> Até 20 out. 2026, a ANEEL não havia publicado a resolução final sobre medição inteligente. A segunda fase da Consulta Pública nº 1/2026 (1º jul. a 14 ago. 2026) tratou justamente dos <b>requisitos técnicos mínimos</b> para consumidores do Grupo B — isto é, o perfil de interoperabilidade obrigatório ainda estava em definição. Ver Seção 13.</div>
+
+  <div class="block discuss">
+    <div class="block-head"><span class="block-kind">Discussão 4</span><span class="block-title">Interoperabilidade é norma ou é perfil?</span></div>
+    <div class="block-body">
+      <p>Dois medidores de fabricantes distintos podem ser ambos "compatíveis com DLMS/COSEM" e, ainda assim, não funcionarem no mesmo sistema de cabeça.</p>
+      <p><b>Pergunta:</b> por que isso acontece, se ambos seguem a mesma norma? O que, além da norma, precisa ser especificado em um edital de compra para que a interoperabilidade seja efetiva? Relacione sua resposta ao conceito de <i>perfil de companhia</i> (<i>companion specification</i>) e discuta quem deveria defini-lo no Brasil: a ANEEL, a ABNT, cada distribuidora, ou uma associação setorial.</p>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="s08" data-title="Protocolos de automação e subestação">
+  <div class="sec-head"><span class="sec-num mono">08</span><h2>Protocolos de Automação e Subestação</h2></div>
+  <p class="lede">Três famílias dividem o espaço: as de telecontrole orientadas a ponto (DNP3, IEC 60870-5), a de subestação orientada a modelo (IEC 61850), e as de propósito industrial geral que vazaram para o setor (Modbus). A diferença entre elas não é desempenho — é <b>grau de autodescrição</b>.</p>
+
+  <div class="figure">
+    <span class="figure-kicker">Figura 5 — comparação de pilhas</span>
+    <div class="figure-title">Onde cada família de protocolos se posiciona nas camadas</div>
+    <div class="chart-scroll">
+      <svg viewBox="0 0 960 360" width="100%" style="max-width:960px" role="img" aria-label="Três pilhas de protocolos comparadas lado a lado: DLMS COSEM para medição, DNP3 e IEC 60870-5-104 para telecontrole, e IEC 61850 com perfis MMS, GOOSE e Sampled Values">
+        <g font-size="11" fill="var(--chart-muted)" font-family="IBM Plex Mono" text-anchor="end">
+          <text x="112" y="46">APLICAÇÃO</text><text x="112" y="116">APRESENT./SESSÃO</text><text x="112" y="186">TRANSPORTE</text>
+          <text x="112" y="256">REDE</text><text x="112" y="326">ENLACE / FÍSICO</text>
+        </g>
+        <g stroke="var(--chart-grid)"><line x1="124" y1="18" x2="124" y2="348"/>
+          <line x1="124" y1="78" x2="950" y2="78"/><line x1="124" y1="148" x2="950" y2="148"/>
+          <line x1="124" y1="218" x2="950" y2="218"/><line x1="124" y1="288" x2="950" y2="288"/>
+        </g>
+        <!-- col headers -->
+        <g font-size="12.5" font-weight="600" fill="var(--chart-ink)" text-anchor="middle">
+          <text x="258" y="14">Medição</text><text x="536" y="14">Telecontrole</text><text x="812" y="14">Subestação</text>
+        </g>
+        <!-- coluna 1: DLMS -->
+        <g transform="translate(140,0)">
+          <rect x="0" y="24" width="236" height="46" fill="var(--s1)" opacity=".16" stroke="var(--s1)"/>
+          <g font-size="11.5" fill="var(--chart-ink)" text-anchor="middle"><text x="118" y="44">DLMS/COSEM</text><text x="118" y="60" font-size="10.5" fill="var(--chart-ink2)">62056-5-3 · 6-1 (OBIS) · 6-2</text></g>
+          <rect x="0" y="94" width="236" height="46" fill="var(--s1)" opacity=".16" stroke="var(--s1)"/>
+          <g font-size="11" fill="var(--chart-ink2)" text-anchor="middle"><text x="118" y="114">Wrapper / HDLC</text><text x="118" y="130" font-size="10.5">segurança no nível de aplicação</text></g>
+          <rect x="0" y="164" width="236" height="46" fill="var(--chart-grid)" opacity=".5" stroke="var(--chart-axis)"/>
+          <text x="118" y="192" font-size="11" fill="var(--chart-ink2)" text-anchor="middle">TCP/UDP (opcional)</text>
+          <rect x="0" y="234" width="236" height="46" fill="var(--chart-grid)" opacity=".5" stroke="var(--chart-axis)"/>
+          <text x="118" y="262" font-size="11" fill="var(--chart-ink2)" text-anchor="middle">IPv6 / 6LoWPAN ou serial</text>
+          <rect x="0" y="304" width="236" height="44" fill="var(--brand-200)" stroke="var(--brand-700)"/>
+          <text x="118" y="331" font-size="11" fill="var(--brand-900)" text-anchor="middle">RF mesh · PLC · celular</text>
+        </g>
+        <!-- coluna 2: DNP3/104 -->
+        <g transform="translate(416,0)">
+          <rect x="0" y="24" width="236" height="46" fill="var(--s2)" opacity=".16" stroke="var(--s2)"/>
+          <g font-size="11.5" fill="var(--chart-ink)" text-anchor="middle"><text x="118" y="44">DNP3 (IEEE 1815) · IEC 60870-5-104</text><text x="118" y="60" font-size="10.5" fill="var(--chart-ink2)">objetos por índice de ponto</text></g>
+          <rect x="0" y="94" width="236" height="46" fill="var(--s2)" opacity=".16" stroke="var(--s2)"/>
+          <text x="118" y="121" font-size="11" fill="var(--chart-ink2)" text-anchor="middle">(ausente — pilha enxuta)</text>
+          <rect x="0" y="164" width="236" height="46" fill="var(--chart-grid)" opacity=".5" stroke="var(--chart-axis)"/>
+          <text x="118" y="192" font-size="11" fill="var(--chart-ink2)" text-anchor="middle">TCP porta 20000 / 2404</text>
+          <rect x="0" y="234" width="236" height="46" fill="var(--chart-grid)" opacity=".5" stroke="var(--chart-axis)"/>
+          <text x="118" y="262" font-size="11" fill="var(--chart-ink2)" text-anchor="middle">IP (roteável — WAN, celular)</text>
+          <rect x="0" y="304" width="236" height="44" fill="var(--brand-200)" stroke="var(--brand-700)"/>
+          <text x="118" y="331" font-size="11" fill="var(--brand-900)" text-anchor="middle">rádio privativo · fibra · celular</text>
+        </g>
+        <!-- coluna 3: 61850 -->
+        <g transform="translate(692,0)">
+          <rect x="0" y="24" width="252" height="46" fill="var(--s7)" opacity=".16" stroke="var(--s7)"/>
+          <g font-size="11.5" fill="var(--chart-ink)" text-anchor="middle"><text x="126" y="42">ACSI — 61850-7-2/7-3/7-4</text><text x="126" y="58" font-size="10.5" fill="var(--chart-ink2)">nós lógicos autodescritos · SCL (61850-6)</text></g>
+          <rect x="0" y="94" width="122" height="116" fill="var(--s7)" opacity=".1" stroke="var(--s7)"/>
+          <g font-size="10.5" fill="var(--chart-ink)" text-anchor="middle"><text x="61" y="118">MMS</text><text x="61" y="134" font-size="10" fill="var(--chart-ink2)">61850-8-1</text><text x="61" y="156" font-size="10" fill="var(--chart-ink2)">cliente-servidor</text><text x="61" y="172" font-size="10" fill="var(--chart-ink2)">sobre TCP/IP</text><text x="61" y="194" font-size="10" fill="var(--chart-muted)">tipos 2, 3, 5</text></g>
+          <rect x="130" y="94" width="122" height="116" fill="var(--s8)" opacity=".12" stroke="var(--s8)"/>
+          <g font-size="10.5" fill="var(--chart-ink)" text-anchor="middle"><text x="191" y="118">GOOSE · SV</text><text x="191" y="134" font-size="10" fill="var(--chart-ink2)">8-1 · 9-2</text><text x="191" y="156" font-size="10" fill="var(--chart-ink2)">multicast direto</text><text x="191" y="172" font-size="10" fill="var(--chart-ink2)">sobre Ethernet</text><text x="191" y="194" font-size="10" fill="var(--s8)">tipos 1A e 4</text></g>
+          <rect x="0" y="234" width="252" height="46" fill="var(--chart-grid)" opacity=".5" stroke="var(--chart-axis)"/>
+          <text x="126" y="256" font-size="10.5" fill="var(--chart-ink2)" text-anchor="middle">IP só no ramo MMS · GOOSE/SV não são roteáveis</text>
+          <text x="126" y="272" font-size="10.5" fill="var(--chart-ink2)" text-anchor="middle">(61850-90-5 define perfil roteável)</text>
+          <rect x="0" y="304" width="252" height="44" fill="var(--brand-200)" stroke="var(--brand-700)"/>
+          <text x="126" y="331" font-size="11" fill="var(--brand-900)" text-anchor="middle">Ethernet comutada · VLAN/802.1Q · PRP/HSR</text>
+        </g>
+      </svg>
+    </div>
+    <div class="legend">
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--s1)"></span>Medição (DLMS/COSEM)</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--s2)"></span>Telecontrole (DNP3 / 60870-5-104)</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--s7)"></span>IEC 61850 — perfil cliente-servidor</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--s8)"></span>IEC 61850 — perfil tempo crítico</span>
+    </div>
+    <div class="figure-note"><span>O mapeamento às camadas OSI é simplificado para fins didáticos: DNP3 e IEC 60870-5 têm pilha deliberadamente enxuta (EPA — <i>Enhanced Performance Architecture</i>), sem camadas de sessão e apresentação. Os tipos de mensagem indicados na coluna da direita referem-se à Tabela 1 (IEC 61850-5).</span><span><b>Fonte:</b> elaboração própria sobre IEC 61850 (partes 6, 7-2, 7-3, 7-4, 8-1, 9-2, 90-5), IEEE 1815 (DNP3), IEC 60870-5-104 e série IEC 62056</span></div>
+  </div>
+
+  <h3 class="sub-h"><span class="tagnum mono">8.1</span>DNP3 e IEC 60870-5-104: orientados a ponto</h3>
+  <p class="body-p">Nas duas famílias, o dado é identificado por <b>índice</b>: "ponto analógico 17", "ponto binário 42". A semântica — que grandeza é, de que equipamento, com que unidade — vive na documentação de engenharia e na base de dados do SCADA, não no protocolo. Consequências práticas:</p>
+      <ul class="body-l">
+    <li><b>Eficiência alta e pilha leve.</b> Funcionam bem em enlaces estreitos e instáveis, o que explica sua longevidade em automação de distribuição sobre rádio. O IEC 60870-5-104 é o perfil sobre TCP/IP da família 101 serial.</li>
+    <li><b>Custo de engenharia alto e repetido.</b> Cada integração exige mapeamento manual de pontos; cada mudança no campo exige atualização coordenada em dois lados. É aqui que se concentra o esforço de comissionamento em projetos brasileiros de automação de distribuição.</li>
+    <li><b>Segurança adicionada depois.</b> Ambos nasceram sem autenticação. O DNP3 recebeu autenticação segura (<i>Secure Authentication</i>) em versões posteriores, e a família IEC 60870-5 tem perfil de segurança próprio na IEC 62351-5 — adotar é decisão de projeto, não padrão de fábrica.</li>
+  </ul>
+
+  <h3 class="sub-h"><span class="tagnum mono">8.2</span>IEC 61850: orientada a modelo</h3>
+  <p class="body-p">A IEC 61850 inverte o arranjo. O dado é <b>autodescrito</b> por um modelo hierárquico padronizado (nós lógicos como <code>XCBR</code> para disjuntor, <code>MMXU</code> para medidas, <code>PTOC</code> para sobrecorrente temporizada), e a configuração completa da subestação é expressa em arquivo <b>SCL</b> (IEC 61850-6) legível por máquina. Os ganhos são de engenharia e de ciclo de vida: configuração verificável automaticamente, substituição de IED com reimportação de configuração, e teste de conformidade objetivo.</p>
+  <p class="body-p">A norma define perfis distintos para requisitos distintos — e aqui o conteúdo da Seção 4 se fecha:</p>
+  <ul class="body-l">
+    <li><b>MMS (61850-8-1), cliente-servidor sobre TCP/IP</b> — supervisão, comando, leitura de medidas, transferência de arquivo. Atende mensagens dos tipos 2, 3 e 5.</li>
+    <li><b>GOOSE (61850-8-1), multicast diretamente sobre Ethernet</b> — mensagens rápidas, inclusive trip (tipo 1A). Sem TCP: não há retransmissão por confirmação; a robustez vem de <b>repetição com intervalo crescente</b> da mesma mensagem.</li>
+    <li><b>Sampled Values (61850-9-2), multicast sobre Ethernet</b> — amostras de corrente e tensão do barramento de processo (tipo 4). É o perfil que viabiliza a subestação digital com <i>merging units</i>, e o que mais pressiona a rede: fluxo contínuo e isócrono.</li>
+    <li><b>IEC 61850-90-5</b> — perfil roteável para transmissão de dados sincrofasoriais e de GOOSE/SV sobre IP, criado porque GOOSE e SV nativos <b>não são roteáveis</b> e, portanto, não atravessam uma WAN.</li>
+    <li><b>IEC 61850-7-420</b> — extensão do modelo para recursos energéticos distribuídos (DER), relevante para a integração de geração distribuída e armazenamento.</li>
+  </ul>
+
+  <div class="callout crit"><b>O ponto que mais gera erro de projeto.</b> GOOSE e SV não são roteáveis: vivem em um domínio de <i>broadcast</i> Ethernet (tipicamente segmentado por VLAN). Toda arquitetura que pressupõe "enviar GOOSE para o centro de operação pela WAN" está errada — ou usa a 61850-90-5, ou faz tradução no gateway, com o atraso correspondente entrando no orçamento de tempo.</div>
+
+  <div class="block reading">
+    <div class="block-head"><span class="block-kind">Leitura 3</span><span class="block-title">GOOSE em aplicações de proteção — avaliação de desempenho</span></div>
+    <div class="block-body">
+      <p><b>O que ler:</b> ABB, <i>Utilization of IEC 61850 GOOSE messaging in protection applications</i> — <a class="cite" href="https://library.e.abb.com/public/dc853877595c4086ae649ca29924c0ec/Paper_GOOSE%20Utilisation%20in%20Protection.pdf" target="_blank" rel="noopener">documento em PDF, acesso aberto</a>. Ler a seção que reproduz a tabela de tipos de mensagem e classes de desempenho da IEC 61850-5 e a discussão sobre o mecanismo de repetição do GOOSE.</p>
+      <p><b>Leitura complementar, se houver tempo:</b> ESSA, H. T. et al. <i>GOOSE performance assessment on an IEC 61850 redundant network</i>. The Journal of Engineering, 2018 — <a class="cite" href="https://ietresearch.onlinelibrary.wiley.com/doi/10.1049/joe.2018.0208" target="_blank" rel="noopener">IET / Wiley, acesso aberto</a>. Trata do efeito da redundância sobre o tempo de transferência.</p>
+      <p><b>Perguntas de verificação:</b></p>
+      <ol>
+        <li>Por que o GOOSE usa repetição com intervalo crescente em vez de confirmação por ACK? Que propriedade do requisito de proteção torna o ACK inadequado?</li>
+        <li>O que significa, operacionalmente, exigir 3 ms em 99,9999% dos casos com limite de 18 ms no restante? Como você <i>mediria</i> conformidade a esse requisito em laboratório?</li>
+        <li>Na literatura sobre redundância, relata-se que o PRP não degrada o tempo das mensagens GOOSE, ao contrário do <i>failover</i> com reserva quente (<i>hot-standby</i>), que gera um transitório perceptível. Explique, pelo mecanismo de cada esquema, por que isso ocorre.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="s09" data-title="Modelos de informação e interoperabilidade">
+  <div class="sec-head"><span class="sec-num mono">09</span><h2>Modelos de Informação e Interoperabilidade</h2></div>
+  <p class="lede">Dois sistemas podem trocar bytes perfeitamente e ainda assim não se entenderem. Interoperabilidade de verdade exige acordo sobre <b>semântica</b>, e é esse o papel dos modelos de informação.</p>
+
+  <div class="grid-3">
+    <div class="card">
+      <span class="tag">Operação / transmissão</span>
+      <h3>CIM — IEC 61970</h3>
+      <p>Modelo comum de informação para interfaces de sistemas de gerenciamento de energia (EMS). É a linguagem de troca entre centros de operação e entre aplicações de análise de rede.</p>
+    </div>
+    <div class="card">
+      <span class="tag">Distribuição</span>
+      <h3>CIM — IEC 61968</h3>
+      <p>Extensão do CIM para integração de aplicações de distribuição: gestão de ativos, atendimento, ordens de serviço, medição. É onde o mundo de TI corporativa da distribuidora encontra o mundo de TA (tecnologia de automação).</p>
+    </div>
+    <div class="card">
+      <span class="tag">Subestação / campo</span>
+      <h3>IEC 61850 (modelo ACSI)</h3>
+      <p>Modelo de dispositivo e função dentro da instalação. Convive com o CIM em vez de competir: 61850 descreve o equipamento, CIM descreve o sistema.</p>
+    </div>
+  </div>
+
+  <p class="body-p" style="margin-top:18px">A articulação entre essas camadas é o objeto dos <b>frameworks de interoperabilidade</b>. O modelo de referência norte-americano é o <i>NIST Framework and Roadmap for Smart Grid Interoperability Standards</i>, cuja versão 4.0 (NIST SP 1108r4, 2021) organiza o problema em domínios e camadas de interoperabilidade. O <b>IEEE 2030-2011</b> propõe a visão de referência de interoperabilidade de smart grid articulando as perspectivas de sistema de potência, de comunicação e de tecnologia da informação. Na Europa, o <b>SGAM</b> (<i>Smart Grid Architecture Model</i>) cumpre papel análogo.</p>
+
+  <div class="callout"><b>Uso prático em dissertação.</b> Esses frameworks não são normas de implementação — são <i>mapas</i>. Servem para (a) posicionar a contribuição do trabalho em uma camada e domínio explícitos, e (b) identificar as interfaces que o trabalho assume como dadas. Um capítulo de arquitetura que usa SGAM ou o modelo conceitual do NIST como estrutura comunica escopo com muito mais precisão do que um diagrama <i>ad hoc</i>.</div>
+</section>
+
+<section class="sec" id="s10" data-title="Sincronismo de tempo e medição fasorial">
+  <div class="sec-head"><span class="sec-num mono">10</span><h2>Sincronismo de Tempo e Medição Fasorial</h2></div>
+  <p class="lede">Tempo é um dado de medição, não um serviço de infraestrutura. Em medição fasorial e em barramento de processo, a referência temporal é parte do requisito — e sua perda degrada a função antes de derrubar o enlace.</p>
+
+  <h3 class="sub-h"><span class="tagnum mono">10.1</span>A cadeia de sincronismo</h3>
+      <ul class="body-l">
+    <li><b>Fonte primária:</b> GNSS (GPS e constelações equivalentes), via receptor na instalação. Vulnerabilidade conhecida a interferência e a <i>spoofing</i> — um vetor de ataque que não precisa tocar a rede de dados.</li>
+    <li><b>Distribuição dentro da instalação:</b> <b>IEEE 1588 (PTP)</b>, com perfis específicos para o setor elétrico — <b>IEC 61850-9-3</b> (perfil de utilidade de potência) e <b>IEEE C37.238</b>. Substituiu progressivamente o pulso por segundo (1 PPS) e o IRIG-B em instalações novas.</li>
+    <li><b>Uso na medição fasorial:</b> a <b>PMU</b> estampa a amostra com tempo sincronizado; o <b>PDC</b> agrega fasores de várias PMUs em um quadro temporal comum. Normalização em <b>IEEE C37.118.1</b> (medição) e <b>C37.118.2</b> (transferência de dados), posteriormente consolidadas na norma conjunta <b>IEC/IEEE 60255-118-1</b>.</li>
+  </ul>
+  <div class="callout warn"><b>Por que isso importa para a arquitetura de rede.</b> Com PTP, a rede deixa de ser um transporte neutro: os switches passam a ser <i>participantes</i> do serviço de tempo (<i>transparent</i> ou <i>boundary clocks</i>). Um switch que não implementa PTP corretamente insere erro de tempo sem gerar nenhum alarme de comunicação — a falha aparece como erro de medição fasorial ou de sincronização de amostras, e o diagnóstico tende a ser atribuído, erradamente, ao equipamento de medição.</div>
+
+  <h3 class="sub-h"><span class="tagnum mono">10.2</span>Medição fasorial no Brasil</h3>
+  <p class="body-p">O <b>Projeto MedFasee</b>, liderado pela UFSC desde 2003, construiu a primeira rede de monitoramento sincrofasorial brasileira, com concentrador de dados na UFSC e pontos de medição em universidades parceiras — tipicamente citado com cerca de 22 pontos de medição, número que pode estar desatualizado. Material de 2025 do Politecnico di Milano registra que o projeto levou à instalação de mais de 20 PMUs no Brasil, cerca de uma dezena na Argentina e no Chile e, mais recentemente, quatro na Europa. Um protótipo inicial de WAMS foi ensaiado no sistema de transmissão da Eletrosul, com um PDC e quatro PMUs.</p>
+  <p class="body-p">No âmbito do operador, há trabalho recente e específico: um artigo do <b>CIGRE 2026</b>, de autores do ONS e da USP, trata de estudo de 2023–2024 para <b>alocação ótima de PMUs no SIN</b>, de modo a tornar o sistema observável e operável em tempo real com medições sincronizadas de alta taxa de amostragem — motivado por novas dinâmicas, como oscilações de potência e questões de controle associadas a elos HVDC.</p>
+  <div class="callout"><b>Enquadramento para a disciplina.</b> O MedFasee é um caso raro de infraestrutura de pesquisa que gerou dados reais do SIN por duas décadas — material natural para trabalho de mestrado profissional em controle e automação. Note, porém, que é rede <b>acadêmica</b> conectada em baixa tensão nas universidades: não substitui, nem é equivalente a, a instrumentação de PMUs do operador no nível de transmissão.</div>
+</section>
+
+<section class="sec" id="s11" data-title="Topologia, redundância e disponibilidade">
+  <div class="sec-head"><span class="sec-num mono">11</span><h2>Topologia, Redundância e Disponibilidade</h2></div>
+  <p class="lede">Confiabilidade em rede de automação elétrica não se obtém por protocolo de reconvergência rápido — obtém-se por <b>redundância sem interrupção</b>, porque a aplicação não tolera o tempo de reconvergência.</p>
+
+  <div class="figure">
+    <span class="figure-kicker">Tabela 3 — esquemas de redundância</span>
+    <div class="figure-title">Mecanismos de redundância em rede de subestação e seu efeito sobre o orçamento de tempo</div>
+    <table class="data-table">
+      <thead><tr><th>Mecanismo</th><th>Princípio</th><th>Tempo de recuperação</th><th>Adequação a tipo 1A (3 ms)</th></tr></thead>
+      <tbody>
+        <tr><td><b>RSTP</b><small>IEEE 802.1w</small></td><td>Reconfiguração da árvore de cobertura após detecção de falha</td><td class="num">centenas de ms a s</td><td><span class="status-pill risk">inadequado</span></td></tr>
+        <tr><td><b>Reserva quente</b><small><i>hot-standby</i> / failover</small></td><td>Enlace secundário assume após detecção de perda do primário</td><td class="num">ms a dezenas de ms</td><td><span class="status-pill wip">transitório perceptível</span></td></tr>
+        <tr><td><b>PRP</b><small>IEC 62439-3</small></td><td>Duplicação do quadro em duas redes independentes; o receptor descarta a cópia duplicada</td><td class="num">zero (sem interrupção)</td><td><span class="status-pill ok">adequado</span></td></tr>
+        <tr><td><b>HSR</b><small>IEC 62439-3</small></td><td>Mesmo princípio do PRP em topologia de anel, com os próprios nós repassando o quadro</td><td class="num">zero (sem interrupção)</td><td><span class="status-pill ok">adequado</span></td></tr>
+      </tbody>
+    </table>
+    <div class="figure-note"><span>A classificação na última coluna é consequência direta do requisito da Tabela 1: um mecanismo cujo tempo de recuperação é maior que o orçamento total da mensagem não pode ser a defesa de uma função de proteção. A literatura sobre desempenho de GOOSE em rede redundante reporta que <b>o PRP não degrada o tempo das mensagens</b>, ao contrário do <i>failover</i> com reserva quente, que gera componente transitória perceptível.</span><span><b>Fonte:</b> elaboração própria sobre IEC 62439-3, IEC 61850-5 e <a class="cite" href="https://ietresearch.onlinelibrary.wiley.com/doi/10.1049/joe.2018.0208" target="_blank" rel="noopener">Essa et al., J. Eng., 2018</a></span></div>
+  </div>
+
+  <h3 class="sub-h"><span class="tagnum mono">11.1</span>Na distribuição: a confiabilidade vem da topologia</h3>
+  <p class="body-p">Na camada NAN não há PRP — o custo por nó proíbe. A confiabilidade vem de propriedades estatísticas da malha:</p>
+      <ul class="body-l">
+    <li><b>Multiplicidade de caminhos.</b> Em rede mesh, cada nó tem tipicamente vários vizinhos alcançáveis; a perda de um nó ou de um concentrador degrada a taxa de coleta, não a função. É o oposto da topologia estrela do PLC, em que a perda do concentrador cega todo o seu agrupamento.</li>
+    <li><b>Tolerância temporal da aplicação.</b> A coleta de faturamento admite retransmissão e coleta tardia. A métrica de projeto não é disponibilidade instantânea, mas <b>taxa de leituras completas dentro da janela</b> (por exemplo, 99% das leituras do dia D até as 6h de D+1).</li>
+    <li><b>Degradação graciosa do medidor.</b> O medidor armazena localmente o perfil de carga. Uma interrupção de comunicação de dias não perde dado — apenas atrasa a sua chegada, desde que a memória de massa seja suficiente. Esse é um requisito de especificação frequentemente subdimensionado.</li>
+  </ul>
+
+  <div class="block discuss">
+    <div class="block-head"><span class="block-kind">Discussão 5</span><span class="block-title">Que métrica de disponibilidade você colocaria no contrato?</span></div>
+    <div class="block-body">
+      <p>Um edital exige "disponibilidade da rede de comunicação de 99,5%". A fornecedora cumpre o número, e a distribuidora, ainda assim, deixa de faturar corretamente 3% das unidades no mês.</p>
+      <p><b>Pergunta:</b> por que o indicador contratado não capturou a falha da função? Proponha um conjunto de dois a três indicadores que capturem — e discuta como cada um pode ser "gamificado" por um fornecedor de má-fé. Relacione com a diferença entre disponibilidade do <i>enlace</i> e sucesso da <i>aplicação</i>.</p>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="s12" data-title="Cibersegurança e privacidade">
+  <div class="sec-head"><span class="sec-num mono">12</span><h2>Cibersegurança e Privacidade</h2></div>
+  <p class="lede">Toda função nova de rede inteligente é também uma superfície de ataque nova. A diferença em relação a TI corporativa é que aqui o efeito de um comprometimento é físico e potencialmente irreversível — e que o requisito de disponibilidade frequentemente conflita com a prática de segurança usual.</p>
+
+  <h3 class="sub-h"><span class="tagnum mono">12.1</span>A inversão da tríade</h3>
+  <p class="body-p">Em TI, a prioridade clássica é confidencialidade, integridade e disponibilidade. Em sistemas de automação elétrica a ordem se inverte: <b>disponibilidade e integridade</b> vêm primeiro, confidencialidade por último. Daí decorrem consequências contraintuitivas:</p>
+      <ul class="body-l">
+    <li><b>Atualização de segurança não é trivial.</b> Reiniciar um IED de proteção para aplicar correção exige janela de manutenção e, possivelmente, indisponibilidade de função de proteção.</li>
+    <li><b>Criptografia compete com o orçamento de tempo.</b> Um estudo brasileiro concluiu que criptografia simétrica AES com CMAC atende às restrições de tempo da IEC para GOOSE, enquanto a assinatura RSA sugerida pela norma se mostrou <b>inviável em dispositivos de baixo poder computacional</b> — um resultado que ilustra bem a tensão entre segurança e determinismo.</li>
+    <li><b>O ativo mais exposto é o mais numeroso.</b> Milhões de medidores em via pública são fisicamente acessíveis. A premissa de projeto correta é que o atacante <b>terá</b> acesso físico a alguns medidores — o que torna chave criptográfica única por parque um erro grave, e gestão individual de chaves um requisito.</li>
+  </ul>
+
+  <h3 class="sub-h"><span class="tagnum mono">12.2</span>Normas técnicas de segurança</h3>
+  <div class="grid-2">
+    <div class="card">
+      <span class="tag">Série dedicada ao setor</span>
+      <h3>IEC 62351 — segurança de dados e comunicações</h3>
+      <p>Série <i>Power systems management and associated information exchange — Data and communications security</i>, estruturada por protocolo: parte 4 (perfis incluindo MMS e derivados, ed. 2018, com modo de compatibilidade e modo nativo), parte 5 (IEC 60870-5 e derivados), parte 6 (perfis IEC 61850, ed. 2020), parte 7 (gestão de rede e sistemas), parte 8 (controle de acesso baseado em papéis), parte 9 (gestão de chaves).</p>
+      <p>A parte 3 trata da segurança de transporte com TLS para perfis TCP/IP — ponto a confirmar na norma antes de citar formalmente.</p>
+    </div>
+    <div class="card">
+      <span class="tag">Gestão e arquitetura</span>
+      <h3>ISA/IEC 62443</h3>
+      <p>Série de segurança para automação industrial em geral. Contribui com o que a IEC 62351 não cobre: segmentação em zonas e condutos, níveis de segurança (SL), e requisitos de ciclo de vida de produto e de processo. Em projeto de REI, as duas séries são complementares, não alternativas.</p>
+    </div>
+  </div>
+
+  <h3 class="sub-h"><span class="tagnum mono">12.3</span>A regulação brasileira de cibersegurança</h3>
+  <p class="body-p">O arcabouço nacional tem duas pernas, uma na agência e outra no operador:</p>
+      <ul class="body-l">
+    <li><b>ANEEL — <a class="cite" href="https://www2.aneel.gov.br/cedoc/ren2021964.html" target="_blank" rel="noopener">REN nº 964/2021</a>.</b> Estabelece objetivos de segurança cibernética, exigindo capacidade de prevenir, detectar, responder e reduzir a vulnerabilidade a incidentes cibernéticos, e prevê <b>avaliação anual de maturidade</b>. Em março de 2021, a ANEEL determinou que suas superintendências de fiscalização iniciassem verificações nos centros de operação dos agentes quanto ao cumprimento do requisito.</li>
+    <li><b>ONS — Submódulo 5.13 dos Procedimentos de Rede e a Rotina Operacional RO-CB.BR.01.</b> Define os controles mínimos de segurança cibernética a serem implementados no <b>ARCiber</b> (Ambiente Regulado Cibernético). A rotina organiza os controles em sete dimensões: arquitetura tecnológica do ARCiber; governança de segurança da informação; inventário de ativos; gestão de vulnerabilidades; gestão de acessos; monitoramento e resposta a incidentes; e exceções. Exemplos de exigência: o ARCiber não deve ser acessível diretamente pela internet, mesmo com firewalls; credenciais privilegiadas devem ter uso exclusivo em tarefas administrativas e monitoramento por trilha de auditoria; o inventário de ativos deve ser refeito no mínimo a cada 24 meses. O escopo alcança instalações da Rede de Operação, centros de operação dos agentes e instalações da Rede de Supervisão diretamente conectadas ao ONS.</li>
+  </ul>
+  <div class="callout warn"><b>Ressalva de fonte — importante.</b> As datas de publicação e vigência do Submódulo 5.13 e da RO-CB.BR.01 <b>divergem entre as fontes secundárias consultadas</b> (uma indica versão inicial em 09/07/2022, outra vigência desde 09/07/2021, outra publicação do submódulo em 22/03/2023). Os sete grupos de controle e os itens citados vêm de trabalhos acadêmicos e de material de consultoria, não do texto oficial. Antes de qualquer uso em dissertação ou em decisão de conformidade, consulte a versão vigente no portal do ONS: <a class="cite" href="https://www.ons.org.br/acervodigitaldocumentosepublicacoes/ro-cb.br.01_rev.00.pdf" target="_blank" rel="noopener">RO-CB.BR.01 (acervo ONS)</a> e a página de <a class="cite" href="https://www.gov.br/aneel/pt-br/assuntos/seguranca/seguranca-cibernetica" target="_blank" rel="noopener">segurança cibernética da ANEEL</a>. Observe também que o <b>Submódulo 2.14</b> trata de requisitos mínimos de Sistemas de Medição para Faturamento — <b>não</b> de cibersegurança; é confusão comum na literatura cinzenta.</div>
+
+  <h3 class="sub-h"><span class="tagnum mono">12.4</span>Privacidade: a curva de carga é dado pessoal</h3>
+  <p class="body-p">Uma curva de carga residencial com resolução de 15 minutos permite inferir presença, rotina de sono, uso de equipamentos específicos e ausência prolongada. Tecnicamente, é a base da desagregação de carga não intrusiva (NILM). Do ponto de vista de proteção de dados, isso tem consequência direta: trata-se de informação relacionada a pessoa natural identificada ou identificável, o que a coloca no escopo da <b>LGPD (Lei nº 13.709/2018)</b>.</p>
+      <p class="body-p">Para a engenharia, três decisões de arquitetura decorrem disso, e devem ser tomadas <i>no projeto</i>, não depois:</p>
+  <ol class="body-l">
+    <li><b>Resolução mínima necessária.</b> Coletar 15 minutos quando a função tarifária exige postos horários é coletar dado pessoal sem necessidade.</li>
+    <li><b>Onde o dado é agregado.</b> Agregação no concentrador reduz o volume de dado individual em trânsito e armazenado no sistema central.</li>
+    <li><b>Quem acessa a porta local do medidor.</b> A interface voltada ao consumidor é um ponto de decisão regulatória e de segurança simultaneamente — é a fronteira da HAN da Seção 3.</li>
+  </ol>
+  <div class="callout"><b>Nota de rigor.</b> O enquadramento da curva de carga como dado pessoal é uma <b>análise</b> apresentada aqui com base na definição legal de dado pessoal, e não uma deliberação regulatória específica da ANEEL sobre o tema. Se o trabalho de mestrado depender desse enquadramento, verifique a existência de posicionamento formal da ANPD ou da ANEEL antes de tratá-lo como pacificado.</div>
+</section>
+
+<section class="sec" id="s13" data-title="O caso brasileiro">
+  <div class="sec-head"><span class="sec-num mono">13</span><h2>O Caso Brasileiro: Números e Regulação</h2></div>
+  <p class="lede">O Brasil está em um momento peculiar: a tecnologia de enlace já está escolhida pelo mercado, e é a <b>regulação da medição</b> — não a engenharia — que define o ritmo de implantação.</p>
+
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-value">5–6<span class="unit">%</span></div><div class="stat-label">Penetração estimada de medidores inteligentes no Brasil — considerada baixa na comparação internacional</div><div class="stat-src">Avaliação setorial (J. Marangon), out. 2026</div></div>
+    <div class="stat-card"><div class="stat-value">2<span class="unit">%/ano</span></div><div class="stat-label">Implantação mínima obrigatória por distribuidora, por 24 meses, desde 1º mar. 2026</div><div class="stat-src">Portaria Normativa MME nº 126/2026</div></div>
+    <div class="stat-card hi"><div class="stat-value">60<span class="unit">mi</span></div><div class="stat-label">Medidores inteligentes projetados para a próxima década (estimativa de consultoria)</div><div class="stat-src">Envol Energy Consulting, 2026</div></div>
+    <div class="stat-card"><div class="stat-value">84,5<span class="unit">mi</span></div><div class="stat-label">Consumidores da classe residencial (ano-base 2025), +2,2% sobre 2024</div><div class="stat-src">EPE, Anuário Estatístico de Energia Elétrica</div></div>
+  </div>
+
+  <div class="figure">
+    <span class="figure-kicker">Figura 6 — distância entre meta e universo</span>
+    <div class="figure-title">O que a regra de 2% ao ano produz, em escala, contra o parque consumidor residencial</div>
+    <div class="chart-scroll">
+      <svg viewBox="0 0 880 250" width="100%" style="max-width:880px" role="img" aria-label="Barras horizontais comparando a penetração atual de 5 a 6 por cento, o acréscimo de 4 pontos percentuais em 24 meses pela regra de 2 por cento ao ano, e o universo de 100 por cento">
+        <g font-size="12" fill="var(--chart-ink)">
+          <text x="0" y="46">Penetração estimada hoje</text>
+          <text x="0" y="106">Acréscimo pela regra de 2%/ano em 24 meses</text>
+          <text x="0" y="166">Projeção: parque em mar. 2028</text>
+          <text x="0" y="226">Universo (unidades consumidoras)</text>
+        </g>
+        <g transform="translate(360,0)">
+          <line x1="0" y1="18" x2="0" y2="238" stroke="var(--chart-axis)"/>
+          <rect x="2" y="26" width="26" height="26" fill="var(--s1)"/>
+          <rect x="2" y="86" width="20" height="26" fill="var(--s4)"/>
+          <rect x="2" y="146" width="48" height="26" fill="var(--s3)"/>
+          <rect x="2" y="206" width="500" height="26" fill="var(--chart-grid)"/>
+          <g font-size="11.5" font-family="IBM Plex Mono" font-weight="600" fill="var(--chart-ink2)">
+            <text x="36" y="45">5–6%</text><text x="30" y="105">+4 p.p.</text><text x="58" y="165">~9–10%</text><text x="508" y="225">100%</text>
+          </g>
+          <g font-size="11" fill="var(--chart-muted)">
+            <text x="110" y="45">≈ 4 a 5 milhões de pontos, em ordem de grandeza</text>
+            <text x="110" y="105">2% × 2 anos, sobre a base de cada distribuidora</text>
+            <text x="130" y="165">se a regra for cumprida e nada mais for somado</text>
+          </g>
+        </g>
+      </svg>
+    </div>
+    <div class="legend">
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--s1)"></span>Instalado (estimativa)</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--s4)"></span>Meta regulatória do biênio</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--s3)"></span>Projeção resultante</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--chart-grid)"></span>Universo</span>
+    </div>
+    <div class="figure-note"><span><b>Cálculo e ressalvas.</b> A penetração de 5–6% é <b>estimativa de avaliação setorial</b>, não dado oficial consolidado: não foi localizada estatística pública da ANEEL ou da ABRADEE com o total nacional de medidores inteligentes instalados. A projeção de ~9–10% é aritmética simples (5–6% + 2% + 2%) e pressupõe cumprimento integral da regra e nenhuma instalação adicional além do mínimo — é um <b>piso de cenário</b>, não previsão. A conversão para "4 a 5 milhões de pontos" usa a ordem de grandeza do parque consumidor e é apresentada apenas como escala.</span><span><b>Fontes:</b> <a class="cite" href="https://www.em.com.br/mundo-corporativo/2026/10/7517379-medicao-inteligente-amplia-desafios-no-setor-eletrico.html" target="_blank" rel="noopener">Estado de Minas, out. 2026</a> · <a class="cite" href="https://canalsolar.com.br/brasil-medidores-inteligentes-proximos-dez-anos/" target="_blank" rel="noopener">Canal Solar / Envol Energy</a> · <a class="cite" href="https://dashboard.epe.gov.br/apps/anuario-livro/livro/pt/destaques.html" target="_blank" rel="noopener">EPE, Anuário Estatístico</a></span></div>
+  </div>
+
+  <h3 class="sub-h"><span class="tagnum mono">13.1</span>A regulação de medição inteligente em movimento</h3>
+  <div class="figure">
+    <span class="figure-kicker">Tabela 4 — estado regulatório em 20 out. 2026</span>
+    <div class="figure-title">Medição inteligente: instrumentos, prazos e o que ainda está em aberto</div>
+    <table class="data-table">
+      <thead><tr><th>Instrumento</th><th>Conteúdo</th><th>Situação</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>Portaria Normativa MME nº 111/2025</b><small>alterada pela nº 126/2026</small></td>
+          <td>Estabelece diretrizes para implantação de sistemas de medição inteligente e prevê análises de custo-benefício para orientar a expansão de médio e longo prazo.</td>
+          <td><span class="status-pill ok">vigente</span></td>
+        </tr>
+        <tr>
+          <td><b>Portaria Normativa MME nº 126/2026</b></td>
+          <td>Obriga as distribuidoras a instalar medição inteligente em <b>2% das unidades consumidoras por ano, durante dois anos</b>, a partir de março de 2026.</td>
+          <td><span class="status-pill ok">vigente desde 1º mar. 2026</span></td>
+        </tr>
+        <tr>
+          <td><b>ANEEL — Consulta Pública nº 1/2026</b></td>
+          <td>Segunda fase aberta de 1º jul. a 14 ago. 2026, sobre os <b>requisitos técnicos mínimos</b> dos sistemas de medição inteligente para consumidores do Grupo B. A agência optou por antecipar a regulamentação das funcionalidades mínimas e deixar para etapa posterior a análise de custo-benefício e os planos de implantação das distribuidoras.</td>
+          <td><span class="status-pill wip">encerrada, em análise</span></td>
+        </tr>
+        <tr>
+          <td><b>ANEEL — Nota Técnica nº 7/2026</b><small>14 out. 2026</small></td>
+          <td>Área técnica propõe <b>condicionar a expansão</b> a análises de custo-benefício positivas, com prazo para as distribuidoras apresentarem estudos até <b>fevereiro de 2028</b>; a partir de 1º mar. 2028 a implantação deve observar a análise apresentada, sem necessidade de aprovação prévia da agência. Traz minuta de resolução para a terceira fase, recomenda nova rodada de discussão por 45 dias e prevê a <b>fatura digital como padrão</b> para quem receber o novo medidor.</td>
+          <td><span class="status-pill wip">proposta da área técnica</span></td>
+        </tr>
+        <tr>
+          <td><b>Resolução final da ANEEL</b></td>
+          <td>Texto consolidado com funcionalidades mínimas e regras de implantação.</td>
+          <td><span class="status-pill risk">não publicada</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="figure-note"><span><b>Fontes de imprensa especializada e de comunicado da agência.</b> Datas e números de instrumento foram reportados por veículos setoriais e pela página de notícias da ANEEL; os textos dos atos não foram consultados diretamente. Para citação formal, buscar a Portaria no DOU e a Nota Técnica no processo correspondente da ANEEL.</span><span><b>Fontes:</b> <a class="cite" href="http://www.pv-magazine-brasil.com/2026/10/16/aneel-propoe-condicionar-expansao-de-medidores-inteligentes-a-analise-de-custo-beneficio/" target="_blank" rel="noopener">pv magazine Brasil, 16 out. 2026</a> · <a class="cite" href="https://www.pv-magazine-brasil.com/2026/06/30/aneel-abre-consulta-publica-sobre-medicao-inteligente-para-consumidores-de-baixa-tensao/" target="_blank" rel="noopener">pv magazine Brasil, 30 jun. 2026</a> · <a class="cite" href="https://www.gov.br/aneel/pt-br/assuntos/noticias/2026-defeso-eleitoral/medidores-de-energia-eletrica-aneel-abre-segunda-fase-da-consulta-publica" target="_blank" rel="noopener">ANEEL — notícia da 2ª fase da CP</a></span></div>
+  </div>
+
+  <div class="callout"><b>Herança regulatória relevante.</b> A medição eletrônica no Grupo B não começou em 2026. A <b>REN ANEEL nº 502/2012</b> regulamentou os sistemas de medição eletrônica para unidades do Grupo B, com prazo de 18 meses para que as distribuidoras oferecessem medidor eletrônico a quem solicitasse, e associou a medição à adoção da tarifa horária branca (prevista para início em março de 2014). A aplicação comercial da tarifa branca passou depois a ser disciplinada pela <b>REN nº 733/2016</b>. A diferença de modelo é instrutiva: 2012 construiu um regime <b>por solicitação do consumidor</b>; 2026 construiu um regime <b>de meta compulsória para a distribuidora</b>.</div>
+
+  <h3 class="sub-h"><span class="tagnum mono">13.2</span>O que a década de projetos-piloto deixou</h3>
+  <p class="body-p">A discussão brasileira de redes inteligentes não começou com a medição obrigatória. Ela foi estruturada pelo <b>Grupo de Trabalho de Redes Elétricas Inteligentes do MME</b>, cujo <a class="cite" href="https://www.gov.br/mme/pt-br/arquivos/relatorio-smart-grid.pdf" target="_blank" rel="noopener">relatório</a> é o documento fundador do tema no país, e pela <b>Chamada nº 011/2010 de P&amp;D Estratégico da ANEEL — Programa Brasileiro de Rede Elétrica Inteligente</b>, listada entre as <a class="cite" href="https://www.gov.br/aneel/pt-br/assuntos/programa-de-pesquisa-desenvolvimento-e-inovacao/chamadas-de-projetos-de-pdi-estrategicos" target="_blank" rel="noopener">chamadas estratégicas da agência</a>. O estudo decorrente teve prazo de doze meses, foi concluído em dezembro de 2011 e produziu 33 relatórios agrupados em sete blocos de pesquisa.</p>
+  <p class="body-p">O ciclo que se seguiu foi amplo em número e disperso em resultado. Levantamento do MCTI citado pela imprensa setorial aponta mais de <b>200 projetos</b> relacionados ao tema, envolvendo <b>60 concessionárias</b> e investimentos da ordem de <b>R$ 1,6 bilhão</b>, financiados majoritariamente pelos aportes obrigatórios em P&amp;D regulados e fiscalizados pela ANEEL. Análise publicada pela FGV Energia sobre a digitalização da medição registra que projetos de distribuidoras com grandes volumes de medidores inteligentes evidenciaram redução de perdas comerciais e de custos operacionais, além de melhora na qualidade do serviço; a mesma análise aponta a <b>REN ANEEL nº 966/2021</b> como norma que regulamenta o desenvolvimento e a aplicação desses projetos-piloto.</p>
+  <div class="callout warn"><b>Leitura crítica que a disciplina deve fazer.</b> Mais de uma década de pilotos não produziu escala, e a razão não foi tecnológica — a tecnologia de enlace já estava madura e escolhida. Crítica recorrente da época, inclusive em material acadêmico da Unicamp, apontava a lacuna regulatória: não estavam definidas nem as especificações dos novos medidores nem a estrutura tarifária que justificaria o investimento. É exatamente esse vazio que as Portarias MME de 2025–2026 e a Consulta Pública nº 1/2026 estão, agora, tentando preencher. A pergunta de pesquisa que fica é se um programa guiado por meta compulsória de implantação resolve um problema que um programa guiado por P&amp;D voluntário não resolveu.</div>
+
+  <h3 class="sub-h"><span class="tagnum mono">13.3</span>Síntese do caso brasileiro</h3>
+  <div class="grid-3">
+    <div class="card"><span class="tag">Já resolvido</span><h3>A camada WAN</h3><p>Fibra OPGW em transmissão, subestações digitais com IEC 61850 e rede de telecomunicação do operador são a parte madura. Aqui o Brasil não é atrasado.</p></div>
+    <div class="card"><span class="tag">Decidido pelo mercado</span><h3>A tecnologia da última milha</h3><p>RF mesh Wi-SUN em 900 MHz é a preferência consolidada, com PLC PRIME ainda relevante no parque existente e em medição centralizada. A decisão técnica foi tomada antes da regulação.</p></div>
+    <div class="card"><span class="tag">Em aberto</span><h3>Escala, perfil e espectro</h3><p>O ritmo depende da resolução final da ANEEL; a interoperabilidade depende do perfil técnico mínimo ainda em definição; a automação crítica depende do desfecho da faixa de 450 MHz.</p></div>
+  </div>
+</section>
+
+<section class="sec kexit" id="s14" data-title="Síntese, tarefa e referências">
+  <div class="wrap" style="padding:0">
+  <div class="sec-head"><span class="sec-num mono">14</span><h2>Síntese, Tarefa e Referências</h2></div>
+
+  <div class="mega-wrap">
+    <div class="eyebrow">O número que organiza toda a aula</div>
+    <div class="mega-number">3 ms</div>
+    <p class="mega-label">O teto da mensagem de <i>trip</i> tipo 1A nas classes P2/P3 da IEC 61850-5. Todo o resto da arquitetura — meio físico, protocolo, redundância, criptografia — precisa caber neste orçamento, ou servir a outra função.</p>
+  </div>
+
+  <h3 class="sub-h"><span class="tagnum mono">14.1</span>Cinco proposições para levar da aula</h3>
+  <ol class="body-l">
+    <li><b>Requisito antes de tecnologia.</b> A pergunta inicial de todo projeto de comunicação em REI é "qual é o tempo admissível e com que confiabilidade estatística", não "qual rádio usar". A Tabela 1 é o único lugar desta aula com valores normativos; todo o resto é faixa de literatura.</li>
+    <li><b>Latência é orçamento, não especificação de um componente.</b> Cada elemento inserido no caminho — switch, firewall, túnel, criptografia, redundância — consome parcela do mesmo total.</li>
+    <li><b>O grau de autodescrição do protocolo determina o custo de ciclo de vida, não o desempenho.</b> DNP3 e NBR 14522 funcionam; custam caro em engenharia repetida. IEC 61850 e DLMS/COSEM custam mais na entrada e menos ao longo de 20 anos.</li>
+    <li><b>Na última milha, o parâmetro escasso é custo por nó;</b> na subestação, é determinismo. São problemas de rede opostos e exigem arquiteturas diferentes sob o mesmo sistema de cabeça.</li>
+    <li><b>No Brasil, o risco regulatório é variável de projeto.</b> O caso da faixa de 450 MHz e o estado inconcluso da regra de medição inteligente mudam o valor presente de decisões de arquitetura tomadas hoje.</li>
+  </ol>
+
+  <div class="block task">
+    <div class="block-head"><span class="block-kind">Tarefa avaliativa</span><span class="block-title">Projeto de arquitetura de comunicação para um alimentador real</span></div>
+    <div class="block-body">
+      <p><b>Cenário.</b> Uma distribuidora opera um alimentador de 13,8 kV com 34 km de extensão, atendendo 4.200 unidades consumidoras: 2.900 em núcleo urbano denso, 900 em periferia de baixa densidade e 400 dispersas em zona rural (incluindo 60 em local sem cobertura celular confirmada). O plano de modernização prevê: medição inteligente em 100% das UCs; 6 religadores telecomandados com esquema de autorrecomposição (FLISR); 2 reguladores de tensão; e uma subestação de distribuição, na origem, a ser digitalizada com IEC 61850.</p>
+      <p><b>Entrega (máximo 10 páginas, formato de relatório técnico):</b></p>
+      <ol>
+        <li><b>Tabela de requisitos</b> por aplicação (latência, taxa, confiabilidade, sincronismo), separando explicitamente o que é <i>requisito normativo</i> do que é <i>faixa típica adotada por decisão de projeto</i>, com a fonte de cada linha.</li>
+        <li><b>Arquitetura proposta em camadas</b> (diagrama + justificativa), com a tecnologia de enlace de cada segmento e o protocolo de cada interface. Escolhas heterogêneas são esperadas e devem ser justificadas economicamente, não apenas tecnicamente.</li>
+        <li><b>Orçamento de tempo</b> fim-a-fim de duas funções: (a) o trip de proteção na subestação digital; (b) o comando de abertura de um religador pelo esquema FLISR. Mostrar as parcelas e a margem.</li>
+        <li><b>Esquema de redundância e disponibilidade</b>, com os indicadores que você proporia em contrato — e a justificativa de por que eles capturam a função, e não só o enlace (ver Discussão 5).</li>
+        <li><b>Análise de segurança</b>: superfície de ataque por camada, controles propostos com referência à IEC 62351 e/ou IEC 62443, e aderência à REN ANEEL nº 964/2021 no que for aplicável à distribuidora.</li>
+        <li><b>Riscos</b>: um parágrafo sobre risco regulatório e um sobre obsolescência tecnológica, cada um com a medida de mitigação adotada no projeto.</li>
+      </ol>
+      <p><b>Rubrica.</b> Correspondência requisito↔tecnologia (30%); consistência do orçamento de tempo (25%); qualidade e rastreabilidade das fontes, incluindo distinção entre norma, literatura e estimativa (20%); tratamento de segurança (15%); clareza do relatório (10%). <b>Penalização:</b> número apresentado sem fonte, ou fonte de blog comercial onde existe norma ou artigo revisado por pares.</p>
+    </div>
+  </div>
+
+  <h3 class="sub-h"><span class="tagnum mono">14.2</span>Referências</h3>
+  <div class="refs">
+    <h4>Normas técnicas (consultar texto oficial)</h4>
+    <ol>
+      <li><b>IEC 61850</b> — <i>Communication networks and systems for power utility automation</i>. Partes de interesse direto: <b>-5</b> (requisitos de comunicação para funções e modelos de dispositivo — origem da Tabela 1), <b>-6</b> (linguagem de configuração SCL), <b>-7-2/-7-3/-7-4</b> (ACSI, classes de dados comuns, classes de nós lógicos), <b>-8-1</b> (mapeamento MMS e GOOSE), <b>-9-2</b> (<i>Sampled Values</i>), <b>-9-3</b> (perfil PTP de utilidade de potência), <b>-90-5</b> (perfil roteável), <b>-7-420</b> (recursos energéticos distribuídos).</li>
+      <li><b>IEC 62056</b> / <b>ABNT NBR IEC 62056</b> — <i>Electricity metering data exchange — The DLMS/COSEM suite</i>. <b>-5-3</b> camada de aplicação (ed. ABNT 03/2023); <b>-6-1</b> sistema de identificação de objetos OBIS (4ª ed. IEC, 2023); <b>-6-2</b> classes de interface COSEM (ed. IEC 2021; ed. ABNT 01/2024).</li>
+      <li><b>ABNT NBR 14522</b> — <i>Intercâmbio de informações para sistemas de medição de energia elétrica — Padronização</i>. Correlatas: NBR 14519 (especificação), NBR 14520 (ensaio), NBR 14521 (aceitação de lotes).</li>
+      <li><b>IEEE 1815</b> — <i>Distributed Network Protocol (DNP3)</i>. <b>IEC 60870-5-101/-104</b> — telecontrole serial e perfil sobre TCP/IP.</li>
+      <li><b>IEC 62351</b> — <i>Power systems management and associated information exchange — Data and communications security</i>. Partes: 3 (perfis TCP/IP, TLS), 4 (perfis incluindo MMS, ed. 2018), 5 (IEC 60870-5 e derivados), 6 (perfis IEC 61850, ed. 2020), 7 (gestão de rede e sistemas), 8 (controle de acesso por papéis), 9 (gestão de chaves).</li>
+      <li><b>ISA/IEC 62443</b> — segurança de sistemas de automação e controle industrial: zonas, condutos e níveis de segurança.</li>
+      <li><b>IEC 62439-3</b> — redundância de alta disponibilidade: PRP e HSR.</li>
+      <li><b>IEEE 1588</b> (PTP), <b>IEEE C37.238</b> (perfil de potência), <b>IEEE C37.118.1/.2</b> e <b>IEC/IEEE 60255-118-1</b> — sincronismo e medição sincrofasorial.</li>
+      <li><b>IEC 61970</b> e <b>IEC 61968</b> — Common Information Model (CIM) para EMS e para integração de aplicações de distribuição.</li>
+      <li><b>Resolução Anatel nº 680/2017</b> — <a class="cite" href="https://www.anatel.gov.br/legislacao/resolucoes/2017/936-resolucao-680" target="_blank" rel="noopener">regulamento de equipamentos de radiocomunicação de radiação restrita</a>; limites técnicos no <a class="cite" href="https://informacoes.anatel.gov.br/legislacao/index.php/component/content/article?id=1139" target="_blank" rel="noopener">Ato nº 14.448/2017</a> (faixas 902–907,5 MHz e 915–928 MHz, entre outras).</li>
+      <li><b>REN ANEEL nº 964/2021</b> — <a class="cite" href="https://www2.aneel.gov.br/cedoc/ren2021964.html" target="_blank" rel="noopener">segurança cibernética no setor elétrico</a>. <b>REN nº 502/2012</b> e <b>REN nº 733/2016</b> — medição eletrônica no Grupo B e tarifa branca.</li>
+      <li><b>ONS</b> — <a class="cite" href="https://www.ons.org.br/acervodigitaldocumentosepublicacoes/ro-cb.br.01_rev.00.pdf" target="_blank" rel="noopener">Rotina Operacional RO-CB.BR.01</a> e Submódulo 5.13 dos Procedimentos de Rede (ARCiber). Submódulo 2.14 — requisitos mínimos de Sistemas de Medição para Faturamento.</li>
+    </ol>
+
+    <h4>Literatura técnico-científica</h4>
+    <ol>
+      <li>YAN, Y.; QIAN, Y.; SHARIF, H.; TIPPER, D. <b>A Survey on Smart Grid Communication Infrastructures: Motivations, Requirements and Challenges.</b> IEEE Communications Surveys &amp; Tutorials, v. 15, n. 1, p. 5–20, 2013. Cópia de acesso aberto: <a class="cite" href="https://digitalcommons.unl.edu/electricalengineeringfacpub/316" target="_blank" rel="noopener">UNL DigitalCommons</a>. <i>(Leitura 1)</i></li>
+      <li>ESSA, H. T. et al. <b>GOOSE performance assessment on an IEC 61850 redundant network.</b> The Journal of Engineering, 2018. <a class="cite" href="https://ietresearch.onlinelibrary.wiley.com/doi/10.1049/joe.2018.0208" target="_blank" rel="noopener">IET/Wiley, acesso aberto</a>. <i>(Leitura 3, complementar)</i></li>
+      <li>RAZA, U. et al. <b>A Comparative Survey of LPWA Networking.</b> arXiv:1802.04222. <a class="cite" href="https://arxiv.org/pdf/1802.04222" target="_blank" rel="noopener">arXiv</a> — base das faixas de LoRaWAN e 802.15.4g citadas na Tabela 2.</li>
+      <li><b>A Primer on 3GPP Narrowband Internet of Things (NB-IoT).</b> arXiv:1606.04171. <a class="cite" href="https://arxiv.org/pdf/1606.04171" target="_blank" rel="noopener">arXiv</a> — alvo de projeto de 10 anos de bateria com 200 bytes/dia a 164 dB.</li>
+      <li><b>A Systematic Analysis of Narrowband IoT Quality of Service.</b> Sensors, v. 20, n. 6, 1636, 2020. <a class="cite" href="https://www.mdpi.com/1424-8220/20/6/1636" target="_blank" rel="noopener">MDPI, acesso aberto</a> — latência de NB-IoT sob acoplamento de 164 dB.</li>
+      <li>MALLMANN, C. <b>Rede RF mesh IPv6 baseada em padrões abertos.</b> Trabalho de conclusão de curso, UFSC. <a class="cite" href="https://repositorio.ufsc.br/bitstream/handle/123456789/218774/TCC%20-%20Completo%20Carlos%20Mallmann..pdf?sequence=1&amp;isAllowed=y" target="_blank" rel="noopener">Repositório UFSC</a> — referência nacional sobre Wi-SUN/6LoWPAN em AMI.</li>
+      <li><b>Detecção, identificação e localização de eventos usando sincrofasores</b> — <a class="cite" href="https://repositorio.ufsc.br/handle/123456789/107079" target="_blank" rel="noopener">Repositório UFSC</a>, no contexto do Projeto MedFasee.</li>
+      <li><b>Optimal PMU allocation for a WAMS-based EMS in the Brazilian power grid</b> — artigo C2-11325, CIGRE 2026 (autores do ONS e da USP). <a class="cite" href="https://www.e-cigre.org/publications/detail/c2-11325-2026-optimal-pmu-allocation-for-a-wams-based-ems-in-the-brazilian-power-grid.html" target="_blank" rel="noopener">e-cigre.org</a>.</li>
+      <li><b>Redes elétricas inteligentes: oportunidade para a indústria</b> — BNDES. <a class="cite" href="https://web.bndes.gov.br/bib/jspui/bitstream/1408/2927/1/RB%2040%20Redes%20el%C3%A9tricas%20inteligentes_P.pdf" target="_blank" rel="noopener">Revista do BNDES</a>.</li>
+      <li><b>Relatório do Grupo de Trabalho de Redes Elétricas Inteligentes</b> — MME. <a class="cite" href="https://www.gov.br/mme/pt-br/arquivos/relatorio-smart-grid.pdf" target="_blank" rel="noopener">gov.br/mme</a> — documento fundador da discussão brasileira de REI.</li>
+      <li>GUNGOR, V. C.; SAHIN, D.; KOCAK, T.; ERGÜT, S.; BUCCELLA, C.; CECATI, C.; HANCKE, G. P. <b>Smart Grid Technologies: Communication Technologies and Standards.</b> IEEE Transactions on Industrial Informatics, v. 7, n. 4, p. 529–539, 2011. DOI <a class="cite" href="https://doi.org/10.1109/TII.2011.2166794" target="_blank" rel="noopener">10.1109/TII.2011.2166794</a>. Pós-print de acesso aberto: <a class="cite" href="https://repository.up.ac.za/bitstream/2263/18406/1/Gungor_Smart%282011%29.pdf" target="_blank" rel="noopener">University of Pretoria</a>. Referência clássica para o mapeamento entre tecnologias e padrões.</li>
+      <li>KABALCI, Y. <b>A survey on smart metering and smart grid communication.</b> Renewable and Sustainable Energy Reviews, v. 57, p. 302–318, 2016. DOI <a class="cite" href="https://doi.org/10.1016/j.rser.2015.12.114" target="_blank" rel="noopener">10.1016/j.rser.2015.12.114</a>. Foco específico em medição inteligente e na classificação entre meios com e sem fio. (Acesso restrito pelo editor.)</li>
+      <li>ABRAHAMSEN, F. E.; AI, Y.; CHEFFENA, M. <b>Communication Technologies for Smart Grid: A Comprehensive Survey.</b> 2021. <a class="cite" href="https://arxiv.org/abs/2103.11657" target="_blank" rel="noopener">arXiv:2103.11657</a>, acesso aberto. <i>(Leitura 2)</i></li>
+      <li><b>NIST Framework and Roadmap for Smart Grid Interoperability Standards, Release 4.0</b> — GOPSTEIN, A.; NGUYEN, C.; O'FALLON, C.; HASTINGS, N.; WOLLMAN, D. NIST SP 1108r4, fev. 2021. DOI <a class="cite" href="https://doi.org/10.6028/NIST.SP.1108r4" target="_blank" rel="noopener">10.6028/NIST.SP.1108r4</a>; <a class="cite" href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.1108r4.pdf" target="_blank" rel="noopener">PDF no NVL Pubs</a>. Atualiza o modelo conceitual, acrescenta cenários de caminho de comunicação, uma ontologia de smart grid e o conceito de <i>Interoperability Profile</i>. <b>IEEE 2030-2011</b> — guia de interoperabilidade de smart grid.</li>
+    </ol>
+
+    <h4>Brasil — política pública, P&amp;D e análise setorial</h4>
+    <ol>
+      <li><b>MME</b> — <a class="cite" href="https://www.gov.br/mme/pt-br/arquivos/relatorio-smart-grid.pdf" target="_blank" rel="noopener">Relatório do Grupo de Trabalho de Redes Elétricas Inteligentes</a>. Documento fundador da discussão brasileira de REI.</li>
+      <li><b>ANEEL</b> — <a class="cite" href="https://www.gov.br/aneel/pt-br/assuntos/programa-de-pesquisa-desenvolvimento-e-inovacao/chamadas-de-projetos-de-pdi-estrategicos" target="_blank" rel="noopener">Chamadas de Projetos de P&amp;DI Estratégicos</a>, onde consta a Chamada nº 011/2010 — Programa Brasileiro de Rede Elétrica Inteligente.</li>
+      <li><b>Projeto estratégico da Chamada 011/2010</b> — <a class="cite" href="http://redesinteligentesbrasil.org.br/o-projeto.html" target="_blank" rel="noopener">redesinteligentesbrasil.org.br</a>: escopo, blocos de pesquisa e relatórios produzidos.</li>
+      <li><b>BNDES</b> — <a class="cite" href="https://web.bndes.gov.br/bib/jspui/bitstream/1408/2927/1/RB%2040%20Redes%20el%C3%A9tricas%20inteligentes_P.pdf" target="_blank" rel="noopener">Redes elétricas inteligentes (smart grid): oportunidade para a indústria</a>. Revista do BNDES.</li>
+      <li><b>FGV Energia</b> — <a class="cite" href="https://repositorio.fgv.br/server/api/core/bitstreams/a3da7744-1850-49ec-ac7e-7f3e68172ca9/content" target="_blank" rel="noopener">Análise da digitalização da medição</a>. Resultados reportados de projetos com grandes volumes de medidores e referência à REN nº 966/2021.</li>
+      <li><b>Unicamp</b> — <a class="cite" href="https://sistemas-prp.unicamp.br/inscricao-congresso/resumos/2018P13412A9223O219.pdf" target="_blank" rel="noopener">Regulamentação de smart grids no Brasil</a>; e <a class="cite" href="https://www2.unicamp.br/unicamp/ju/534/rumo-rede-eletrica-inteligente" target="_blank" rel="noopener">Rumo à rede elétrica inteligente</a> — crítica contemporânea à lacuna regulatória.</li>
+      <li><b>Ciência e Cultura (SBPC)</b> — <a class="cite" href="http://cienciaecultura.bvs.br/scielo.php?script=sci_arttext&amp;pid=S0009-67252011000100003" target="_blank" rel="noopener">Brasil inova nas redes elétricas inteligentes</a>, 2011. Panorama do início do ciclo de pilotos.</li>
+      <li><b>O Setor Elétrico</b> — <a class="cite" href="https://www.osetoreletrico.com.br/falta-de-regulacao-entrava-smart-grid-no-pais/" target="_blank" rel="noopener">Falta de regulação entrava smart grid no país</a>: levantamento do MCTI com mais de 200 projetos, 60 concessionárias e cerca de R$ 1,6 bilhão investidos.</li>
+    </ol>
+
+    <h4>Documentos técnicos de fornecedores e alianças (uso com ressalva)</h4>
+    <ol>
+      <li><b>ABB</b> — <a class="cite" href="https://library.e.abb.com/public/dc853877595c4086ae649ca29924c0ec/Paper_GOOSE%20Utilisation%20in%20Protection.pdf" target="_blank" rel="noopener">Utilization of IEC 61850 GOOSE messaging in protection applications</a>. Reproduz a tabela de classes de desempenho da IEC 61850-5.</li>
+      <li><b>SEL</b> — <a class="cite" href="https://cdn.selinc.com/assets/Literature/Publications/Technical%20Papers/6335_IEC61850_DH-DD_20080912_Web.pdf" target="_blank" rel="noopener">IEC 61850 (artigo técnico, 2008)</a> — requisito estatístico de 99,9999% para o tipo 1A.</li>
+      <li><b>Wi-SUN Alliance</b> — <a class="cite" href="https://wi-sun.org/wp-content/uploads/Wi-SUN-Overview-NAInterop-August-2025-r2.pdf" target="_blank" rel="noopener">Wi-SUN Overview (ago. 2025)</a>; <a class="cite" href="https://wi-sun.org/blog/introducing-wi-sun-fan-1-1-empowering-sustainable-secure-and-interoperable-iot-networks/" target="_blank" rel="noopener">FAN 1.1</a>.</li>
+      <li><b>Texas Instruments</b> — <a class="cite" href="https://www.ti.com/lit/wp/slyy038/slyy038.pdf" target="_blank" rel="noopener">Implementing PRIME</a>; <a class="cite" href="https://e2e.ti.com/cfs-file/__key/communityserver-discussions-components-files/171/2654.TI_5F00_plc_5F00_g3.pdf" target="_blank" rel="noopener">Developing robust PLC with G3</a>. <b>G3-PLC Alliance</b> — <a class="cite" href="https://g3-alliance.com/download/84/presentations/3252/g3-alliance-alliance-webinar-regulatory-regime-and-g3-alliance-deployments-in-fcc-band-in-europe-june-15th-2022.pdf" target="_blank" rel="noopener">regime regulatório e implantações na faixa FCC</a>.</li>
+      <li><b>Silicon Labs</b> — <a class="cite" href="https://www.silabs.com/documents/public/presentations/wsn-300-building-large-scale-smart-city-networks-with-wi-sun.pdf" target="_blank" rel="noopener">WSN-300: redes Wi-SUN de larga escala</a> (alcance por salto a 50 kbps).</li>
+      <li><b>Hexing</b> — <a class="cite" href="https://www.hxgroup.com/en/client_cases_post/brazil-utility-1-3-million-smart-meters-turnkey-project/" target="_blank" rel="noopener">estudo de caso: 1,3 milhão de medidores Wi-SUN no Brasil</a>. Material do fornecedor; a distribuidora não é nomeada.</li>
+      <li><b>O Setor Elétrico</b> — <a class="cite" href="https://www.osetoreletrico.com.br/infraestrutura-avancada-de-medicao-ami/" target="_blank" rel="noopener">Infraestrutura Avançada de Medição (AMI)</a>. <b>CAS Tecnologia / Canal Energia</b> — <a class="cite" href="https://www.castecnologia.com.br/21-07-2023-canal-energia/" target="_blank" rel="noopener">preferência setorial por Wi-SUN e divisão com PLC PRIME</a>.</li>
+      <li><b>CEFET-MG</b> — <a class="cite" href="https://www.eng-eletrica.bh.cefetmg.br/wp-content/uploads/sites/191/2025/10/Apres_METRUM_CEFET_Hackathon2025.pdf" target="_blank" rel="noopener">apresentação METRUM</a> — incompatibilidade da NBR 14522 com protocolos industriais modernos.</li>
+    </ol>
+
+    <h4>Imprensa setorial e regulação em curso</h4>
+    <ol>
+      <li><a class="cite" href="http://www.pv-magazine-brasil.com/2026/10/16/aneel-propoe-condicionar-expansao-de-medidores-inteligentes-a-analise-de-custo-beneficio/" target="_blank" rel="noopener">ANEEL propõe condicionar expansão de medidores a custo-benefício</a> — pv magazine Brasil, 16 out. 2026 (Nota Técnica nº 7/2026).</li>
+      <li><a class="cite" href="https://www.gov.br/aneel/pt-br/assuntos/noticias/2026-defeso-eleitoral/medidores-de-energia-eletrica-aneel-abre-segunda-fase-da-consulta-publica" target="_blank" rel="noopener">ANEEL abre segunda fase da consulta pública sobre medidores</a> — gov.br/aneel.</li>
+      <li><a class="cite" href="https://www.em.com.br/mundo-corporativo/2026/10/7517379-medicao-inteligente-amplia-desafios-no-setor-eletrico.html" target="_blank" rel="noopener">Medição inteligente amplia desafios no setor elétrico</a> — Estado de Minas, out. 2026 (penetração de 5–6%).</li>
+      <li><a class="cite" href="https://canalsolar.com.br/brasil-medidores-inteligentes-proximos-dez-anos/" target="_blank" rel="noopener">Brasil deverá instalar 60 milhões de medidores inteligentes em até dez anos</a> — Canal Solar / Envol Energy.</li>
+      <li><a class="cite" href="https://teletime.com.br/26/01/2026/concessionarias-450-mhz/" target="_blank" rel="noopener">Concessionárias pedem desistência do leilão de 450 MHz</a> — TELETIME · <a class="cite" href="https://www.mobiletime.com.br/noticias/01/04/2026/450-mhz-cancelado/" target="_blank" rel="noopener">Anatel desiste de leiloar a faixa</a> — Mobile Time · <a class="cite" href="https://teletime.com.br/19/03/2026/450-mhz-utcal-grupo/" target="_blank" rel="noopener">UTCAL propõe grupo de estudo</a>.</li>
+      <li><a class="cite" href="https://dashboard.epe.gov.br/apps/anuario-livro/livro/pt/destaques.html" target="_blank" rel="noopener">EPE — Anuário Estatístico de Energia Elétrica, destaques</a> (84,5 milhões de consumidores residenciais; 566,7 TWh de consumo total, ano-base 2025).</li>
+    </ol>
+  </div>
+
+  <div class="callout warn" style="margin-top:26px"><b>Pontos a revalidar antes de reutilizar este material.</b> (1) Publicação da resolução final da ANEEL sobre medição inteligente e o conteúdo das funcionalidades mínimas; (2) desfecho do enquadramento da faixa de 450 MHz para <i>utilities</i> em caráter primário; (3) versão vigente do Submódulo 5.13 e da RO-CB.BR.01 no portal do ONS, cujas datas divergem entre fontes secundárias; (4) edição corrente de cada parte da IEC 62351 e da IEC 62056 citada; (5) estatística oficial de medidores inteligentes instalados, caso a ANEEL passe a publicá-la — o número de 5–6% usado aqui é estimativa setorial.</div>
+  <div class="callout"><b>Sobre o uso de fontes nesta aula.</b> Normas técnicas e textos legais são citados por número e parte, e devem ser consultados no original — nenhum trecho normativo foi reproduzido a partir de fonte secundária sem que isso esteja dito. Valores de desempenho de tecnologias vêm de especificação de aliança ou de literatura revisada, com a fonte nominal em cada linha da Tabela 2. Dados regulatórios brasileiros em movimento vêm de imprensa setorial e de comunicados de agência, e estão marcados como tal. Onde uma fonte divergiu de outra, a divergência está registrada em vez de resolvida silenciosamente.</div>
+  </div>
+</section>
+
+</main>
+
+<footer class="page">Ifes · Mestrado Profissional em Engenharia de Controle e Automação · Tópicos Especiais em Smart Grids e Redes Elétricas Inteligentes — Comunicações · 20 de outubro de 2026</footer>
+
+<script>
+(function(){
+  try{
+    var sections = Array.prototype.slice.call(document.querySelectorAll('main > section'));
+    var fill = document.getElementById('progressFill');
+    var secnow = document.getElementById('secnow');
+    function onScroll(){
+      var doc = document.documentElement;
+      var scrolled = (doc.scrollTop) / (doc.scrollHeight - doc.clientHeight);
+      fill.style.width = Math.max(0, Math.min(1, scrolled)) * 100 + '%';
+      var idx = 0;
+      sections.forEach(function(s, i){
+        var r = s.getBoundingClientRect();
+        if(r.top < window.innerHeight * 0.4) idx = i + 1;
+      });
+      secnow.textContent = String(Math.min(idx, sections.length)).padStart(2,'0');
+    }
+    document.addEventListener('scroll', onScroll, {passive:true});
+    onScroll();
+  }catch(e){}
+})();
+</script>
